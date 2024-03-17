@@ -1,3 +1,7 @@
+.vs
+Project/Debug
+Project/02-Bubble/Debug
+
 # C++
 # Prerequisites
 *.d
@@ -11,6 +15,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+*.pdb
 
 # Compiled Dynamic libraries
 *.so
@@ -30,4 +35,6 @@
 *.out
 *.app
 
-.vs
+#Logs
+*.tlog
+*.log

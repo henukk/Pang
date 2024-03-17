@@ -1,0 +1,36 @@
+TILEMAP
+48 30 -
+8 -
+backgrounds/stage1-1.png -
+images/Glass.png -
+16 16 -
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                

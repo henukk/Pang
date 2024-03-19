@@ -12,7 +12,7 @@
 
 enum PlayerAnims
 {
-	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DISPARA
+	MOVE_LEFT, MOVE_RIGHT, DISPARA, PUJA
 };
 
 
@@ -21,13 +21,8 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	bJumping = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(5);
-	
-		sprite->setAnimationSpeed(STAND_LEFT, 8);
-		sprite->addKeyframe(STAND_LEFT, glm::vec2(0.5f, 0.f));
-		
-		sprite->setAnimationSpeed(STAND_RIGHT, 8);
-		sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.f, 0.f));
+	sprite->setNumberAnimations(4);
+
 		
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
@@ -45,6 +40,12 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 		sprite->setAnimationSpeed(DISPARA, 8);
 		sprite->addKeyframe(DISPARA, glm::vec2(0.0, 0.75f));
+
+		sprite->setAnimationSpeed(PUJA, 8);
+		sprite->addKeyframe(PUJA, glm::vec2(0.0, 0.25f));
+		sprite->addKeyframe(PUJA, glm::vec2(0.1, 0.25f));
+		sprite->addKeyframe(PUJA, glm::vec2(0.2, 0.25f));
+		sprite->addKeyframe(PUJA, glm::vec2(0.3, 0.25f));
 		
 		
 	sprite->changeAnimation(0);
@@ -64,7 +65,6 @@ void Player::update(int deltaTime)
 		if(map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x += 2;
-			sprite->changeAnimation(STAND_LEFT);
 		}
 	}
 	else if(Game::instance().getKey(GLFW_KEY_RIGHT))
@@ -75,54 +75,22 @@ void Player::update(int deltaTime)
 		if(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
-			sprite->changeAnimation(STAND_RIGHT);
+			sprite->changeAnimation(MOVE_RIGHT);
 		}
 	}
-
-	else if (Game::instance().getKey(GLFW_KEY_SPACE))
-	{
+	else if(Game::instance().getKey(GLFW_KEY_UP)) {
+		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
+		posPlayer.y -= 2;
+		//MIREM SI TENIM UNA ESCAALA
 		
-			sprite->changeAnimation(DISPARA);
-		
+	}else if (Game::instance().getKey(GLFW_KEY_DOWN)) {
+		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
+		posPlayer.y += 2;
+		//MIREM SI TENIM UNA ESCAALA
+
 	}
 
-
-	else
-	{
-		if(sprite->animation() == MOVE_LEFT)
-			sprite->changeAnimation(STAND_LEFT);
-		else if(sprite->animation() == MOVE_RIGHT)
-			sprite->changeAnimation(STAND_RIGHT);
-	}
-	
-	if(bJumping)
-	{
-		jumpAngle += JUMP_ANGLE_STEP;
-		if(jumpAngle == 180)
-		{
-			bJumping = false;
-			posPlayer.y = startY;
-		}
-		else
-		{
-			posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
-			if(jumpAngle > 90)
-				bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
-		}
-	}
-	else
-	{
-		posPlayer.y += FALL_STEP;
-		if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
-		{
-			if(Game::instance().getKey(GLFW_KEY_UP))
-			{
-				bJumping = true;
-				jumpAngle = 0;
-				startY = posPlayer.y;
-			}
-		}
-	}
+	else sprite->changeAnimation(DISPARA);
 	
 	sprite->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y)));
 }

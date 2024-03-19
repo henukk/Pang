@@ -4,6 +4,7 @@
 
 
 #define TARGET_FRAMERATE 60.0f
+#define SCALE_FACTOR 4
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -38,7 +39,7 @@ int main(void)
 		return -1;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(SCALE_FACTOR*SCREEN_WIDTH, SCALE_FACTOR*SCREEN_HEIGHT, "Pang", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();

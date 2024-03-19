@@ -45,17 +45,18 @@ void TileMap::paintBackground(ShaderProgram& program) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	float downOffset = SCREEN_HEIGHT / 30.0f * 4.0f;
+	int backgroundHeigth = (mapSize.y - 4) * tileSize;
+	int bakcgroundWidth = mapSize.x * tileSize;
 
 	float vertices[24] = {
 		// Posiciones          // Coordenadas de Textura
 		0.0f, 0.0f, 0.0f, 0.0f, // Esquina superior izquierda
-		0.0f, SCREEN_HEIGHT - downOffset, 0.0f, 1.0f, // Esquina inferior izquierda
-		SCREEN_WIDTH, SCREEN_HEIGHT - downOffset, 1.0f, 1.0f, // Esquina inferior derecha
+		0.0f, backgroundHeigth, 0.0f, 1.0f, // Esquina inferior izquierda
+		bakcgroundWidth, backgroundHeigth, 1.0f, 1.0f, // Esquina inferior derecha
 
 		0.0f, 0.0f, 0.0f, 0.0f, // Esquina inferior izquierda
-		SCREEN_WIDTH, SCREEN_HEIGHT - downOffset, 1.0f, 1.0f, // Esquina superior derecha
-		SCREEN_WIDTH, 0.0f, 1.0f, 0.0f // Esquina inferior derecha
+		bakcgroundWidth, backgroundHeigth, 1.0f, 1.0f, // Esquina superior derecha
+		bakcgroundWidth, 0.0f, 1.0f, 0.0f // Esquina inferior derecha
 	};
 
 	glGenVertexArrays(1, &vaoBackground);
@@ -168,6 +169,7 @@ bool TileMap::loadLevel(const string& levelFile)
 void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 {
 	int tile;
+	int blockSize = 8;
 	glm::vec2 posTile, texCoordTile[2], halfTexel;
 	vector<float> vertices;
 
@@ -182,7 +184,7 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 			{
 				// Non-empty tile
 				nTiles++;
-				posTile = glm::vec2(minCoords.x + i * (float(SCREEN_WIDTH) / mapSize.x), minCoords.y + j * (float(SCREEN_HEIGHT) / mapSize.y));
+				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
 				texCoordTile[0] = glm::vec2(float((tile - 1) % tilesheetSize.x) / tilesheetSize.x, float((tile - 1) / tilesheetSize.x) / tilesheetSize.y);
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
 				//texCoordTile[0] += halfTexel;
@@ -190,30 +192,28 @@ void TileMap::prepareArrays(const glm::vec2& minCoords, ShaderProgram& program)
 				// First triangle
 				vertices.push_back(posTile.x); vertices.push_back(posTile.y);
 				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + (float(SCREEN_WIDTH) / mapSize.x)); vertices.push_back(posTile.y);
+				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y);
 				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + (float(SCREEN_WIDTH) / mapSize.x)); vertices.push_back(posTile.y + (float(SCREEN_HEIGHT) / mapSize.y));
+				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
 				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
 				// Second triangle
 				vertices.push_back(posTile.x); vertices.push_back(posTile.y);
 				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + (float(SCREEN_WIDTH) / mapSize.x)); vertices.push_back(posTile.y + (float(SCREEN_HEIGHT) / mapSize.y));
+				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
 				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
-				vertices.push_back(posTile.x); vertices.push_back(posTile.y + (float(SCREEN_HEIGHT) / mapSize.y));
+				vertices.push_back(posTile.x); vertices.push_back(posTile.y + blockSize);
 				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[1].y);
 			}
 		}
 	}
 
-	if (vertices.size() > 0) {
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, 24 * nTiles * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-		posLocation = program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
-		texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	}
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 24 * nTiles * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	posLocation = program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
+	texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
 // Collision tests for axis aligned bounding boxes.
@@ -224,14 +224,13 @@ bool TileMap::collisionMoveLeft(const glm::ivec2& pos, const glm::ivec2& size) c
 {
 	int x, y0, y1;
 
-	x = pos.x / (float(SCREEN_WIDTH) / mapSize.x);
-	y0 = pos.y / (float(SCREEN_HEIGHT) / mapSize.y);
-	y1 = (pos.y + size.y - 1) / (float(SCREEN_HEIGHT) / mapSize.y);
+	x = pos.x / tileSize;
+	y0 = pos.y / tileSize;
+	y1 = (pos.y + size.y - 1) / tileSize;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (map[y * mapSize.x + x] != 0) {
+		if (map[y * mapSize.x + x] != 0)
 			return true;
-		}
 	}
 
 	return false;
@@ -241,14 +240,13 @@ bool TileMap::collisionMoveRight(const glm::ivec2& pos, const glm::ivec2& size) 
 {
 	int x, y0, y1;
 
-	x = (pos.x + size.x - 1) / (float(SCREEN_WIDTH)/mapSize.x);
-	y0 = pos.y / (float(SCREEN_HEIGHT) / mapSize.y);
-	y1 = (pos.y + size.y - 1) / (float(SCREEN_HEIGHT) / mapSize.y);
+	x = (pos.x + size.x - 1) / tileSize;
+	y0 = pos.y / tileSize;
+	y1 = (pos.y + size.y - 1) / tileSize;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (map[y * mapSize.x + x] != 0) {
+		if (map[y * mapSize.x + x] != 0)
 			return true;
-		}
 	}
 
 	return false;
@@ -258,21 +256,21 @@ bool TileMap::collisionMoveDown(const glm::ivec2& pos, const glm::ivec2& size, i
 {
 	int x0, x1, y;
 
-	x0 = pos.x / (float(SCREEN_WIDTH) / mapSize.x);
-	x1 = (pos.x + size.x - 1) / (float(SCREEN_WIDTH) / mapSize.x);
-	y = (pos.y + size.y - 1) / (float(SCREEN_HEIGHT) / mapSize.y);
-
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+	y = (pos.y + size.y - 1) / tileSize;
 	for (int x = x0; x <= x1; x++)
 	{
 		if (map[y * mapSize.x + x] != 0)
 		{
-			if (*posY - (float(SCREEN_HEIGHT) / mapSize.y) * y + size.y <= 4)
+			if (*posY - tileSize * y + size.y <= 4)
 			{
-				*posY = (float(SCREEN_HEIGHT) / mapSize.y) * y - size.y;
+				*posY = tileSize * y - size.y;
 				return true;
 			}
 		}
 	}
+
 	return false;
 }
 

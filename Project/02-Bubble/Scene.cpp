@@ -8,11 +8,8 @@
 #define SCREEN_X 48
 #define SCREEN_Y 30
 
-#define INIT_PLAYER_X_TILES 24
-#define INIT_PLAYER_Y_TILES 23
-
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define INIT_PLAYER_X_TILES 5
+#define INIT_PLAYER_Y_TILES 5
 
 
 Scene::Scene()

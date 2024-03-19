@@ -4,6 +4,7 @@ TILEMAP
 backgrounds/stage1-1.png -
 images/Glass.png -
 16 16 -
+1                                               
                                                 
                                                 
                                                 
@@ -24,13 +25,12 @@ images/Glass.png -
                                                 
                                                 
                                                 
+                                              1 
+                                              1 
+                                              1 
+                                              1 
                                                 
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
+                                               1
+                                               1
+                                               1
+                                               1

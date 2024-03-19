@@ -18,12 +18,11 @@ enum PlayerAnims
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
-	bJumping = false;
+	bStairs = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(4);
 
-		
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.6f, 0.f));
@@ -78,12 +77,12 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(MOVE_RIGHT);
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_UP)) {
+	else if(bStairs && Game::instance().getKey(GLFW_KEY_UP)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		posPlayer.y -= 2;
 		//MIREM SI TENIM UNA ESCAALA
 		
-	}else if (Game::instance().getKey(GLFW_KEY_DOWN)) {
+	}else if (bStairs && Game::instance().getKey(GLFW_KEY_DOWN)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		posPlayer.y += 2;
 		//MIREM SI TENIM UNA ESCAALA

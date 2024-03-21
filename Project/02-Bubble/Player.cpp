@@ -12,16 +12,17 @@
 
 enum PlayerAnims
 {
-	MOVE_LEFT, MOVE_RIGHT, DISPARA, PUJA
+	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA
 };
 
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	texProgram = shaderProgram;
 	bJumping = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(4);
+	sprite->setNumberAnimations(5);
 
 		
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
@@ -38,8 +39,11 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.3, 0.f));
 		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.4, 0.f));
 
+		sprite->setAnimationSpeed(STAY, 8);
+		sprite->addKeyframe(STAY, glm::vec2(0.0, 0.75f));
+
 		sprite->setAnimationSpeed(DISPARA, 8);
-		sprite->addKeyframe(DISPARA, glm::vec2(0.0, 0.75f));
+		sprite->addKeyframe(DISPARA, glm::vec2(0.1, 0.75f));
 
 		sprite->setAnimationSpeed(PUJA, 8);
 		sprite->addKeyframe(PUJA, glm::vec2(0.0, 0.25f));
@@ -53,6 +57,16 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
+
+void Player::shootHarpoon() {
+	Harpoon* newHarpoon = new Harpoon();
+	newHarpoon->init(glm::vec2(posPlayer.x + 16, posPlayer.y), texProgram); // Ajusta según la posición del jugador
+	newHarpoon->setTileMap(map);
+	harpoons.push_back(newHarpoon); // Añade el nuevo arpón al vector
+}
+
+
+
 
 void Player::update(int deltaTime)
 {
@@ -88,16 +102,38 @@ void Player::update(int deltaTime)
 		posPlayer.y += 2;
 		//MIREM SI TENIM UNA ESCAALA
 
+	}else if (Game::instance().getKey(GLFW_KEY_SPACE)) {
+		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
+		sprite->changeAnimation(DISPARA);
+		shootHarpoon();
 	}
 
-	else sprite->changeAnimation(DISPARA);
+
+	else sprite->changeAnimation(STAY);
 	
+	for (auto it = harpoons.begin(); it != harpoons.end(); ) {
+		(*it)->update(deltaTime);
+		if (!(*it)->isAlive()) {
+			delete* it; // Elimina el objeto arpón
+			it = harpoons.erase(it); // Elimina el puntero del vector y actualiza el iterador
+		}
+		else {
+			++it;
+		}
+	}
+
+
 	sprite->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y)));
 }
 
 void Player::render()
 {
 	sprite->render();
+	for (Harpoon* harpoon : harpoons) {
+		if (harpoon->isAlive()) {
+			harpoon->render();
+		}
+	}
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -110,6 +146,8 @@ void Player::setPosition(const glm::vec2 &pos)
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
+
+
 
 
 

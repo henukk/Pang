@@ -25,7 +25,7 @@ public:
 	void shootHarpoon();
 	
 private:
-	bool bJumping;
+	bool bStairs;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY;
 	Texture spritesheet;

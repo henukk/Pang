@@ -18,13 +18,12 @@ enum PlayerAnims
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
-	texProgram = shaderProgram;
-	bJumping = false;
+
+	bStairs = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(5);
 
-		
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.6f, 0.f));
@@ -60,9 +59,9 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::shootHarpoon() {
 	Harpoon* newHarpoon = new Harpoon();
-	newHarpoon->init(glm::vec2(posPlayer.x + 16, posPlayer.y), texProgram); // Ajusta según la posición del jugador
+	newHarpoon->init(glm::vec2(posPlayer.x + 16, posPlayer.y), texProgram); // Ajusta segï¿½n la posiciï¿½n del jugador
 	newHarpoon->setTileMap(map);
-	harpoons.push_back(newHarpoon); // Añade el nuevo arpón al vector
+	harpoons.push_back(newHarpoon); // Aï¿½ade el nuevo arpï¿½n al vector
 }
 
 
@@ -92,12 +91,12 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(MOVE_RIGHT);
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_UP)) {
+	else if(bStairs && Game::instance().getKey(GLFW_KEY_UP)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		posPlayer.y -= 2;
 		//MIREM SI TENIM UNA ESCAALA
 		
-	}else if (Game::instance().getKey(GLFW_KEY_DOWN)) {
+	}else if (bStairs && Game::instance().getKey(GLFW_KEY_DOWN)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		posPlayer.y += 2;
 		//MIREM SI TENIM UNA ESCAALA
@@ -114,7 +113,7 @@ void Player::update(int deltaTime)
 	for (auto it = harpoons.begin(); it != harpoons.end(); ) {
 		(*it)->update(deltaTime);
 		if (!(*it)->isAlive()) {
-			delete* it; // Elimina el objeto arpón
+			delete* it; // Elimina el objeto arpï¿½n
 			it = harpoons.erase(it); // Elimina el puntero del vector y actualiza el iterador
 		}
 		else {

@@ -4,6 +4,8 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
+#include "Harpoon.h"
+#include "ShaderProgram.h"
 
 
 // Player is basically a Sprite that represents the player. As such it has
@@ -20,6 +22,7 @@ public:
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+	void shootHarpoon();
 	
 private:
 	bool bStairs;
@@ -28,6 +31,8 @@ private:
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
+	vector<Harpoon*> harpoons;
+	ShaderProgram texProgram;
 
 };
 

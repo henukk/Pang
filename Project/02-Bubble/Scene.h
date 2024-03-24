@@ -7,6 +7,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Harpoon.h"
 
 
 // Scene contains all the entities of our game.
@@ -34,6 +35,7 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+	Harpoon* harpoon;
 
 };
 

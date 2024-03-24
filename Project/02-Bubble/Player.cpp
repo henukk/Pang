@@ -12,16 +12,17 @@
 
 enum PlayerAnims
 {
-	MOVE_LEFT, MOVE_RIGHT, DISPARA, PUJA
+	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA
 };
 
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+
 	bStairs = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(4);
+	sprite->setNumberAnimations(5);
 
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
@@ -37,8 +38,11 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.3, 0.f));
 		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.4, 0.f));
 
+		sprite->setAnimationSpeed(STAY, 8);
+		sprite->addKeyframe(STAY, glm::vec2(0.0, 0.75f));
+
 		sprite->setAnimationSpeed(DISPARA, 8);
-		sprite->addKeyframe(DISPARA, glm::vec2(0.0, 0.75f));
+		sprite->addKeyframe(DISPARA, glm::vec2(0.1, 0.75f));
 
 		sprite->setAnimationSpeed(PUJA, 8);
 		sprite->addKeyframe(PUJA, glm::vec2(0.0, 0.25f));
@@ -52,6 +56,8 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
+
+
 
 void Player::update(int deltaTime)
 {
@@ -77,26 +83,46 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(MOVE_RIGHT);
 		}
 	}
-	else if(bStairs && Game::instance().getKey(GLFW_KEY_UP)) {
-		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
-		posPlayer.y -= 2;
+	else if(Game::instance().getKey(GLFW_KEY_UP)) {
+		if (sprite->animation() != PUJA) 
+			sprite->changeAnimation(PUJA);
+		posPlayer.y -= 1;
+		if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y += 1;
+			sprite->changeAnimation(PUJA);
+		}
 		//MIREM SI TENIM UNA ESCAALA
 		
 	}else if (bStairs && Game::instance().getKey(GLFW_KEY_DOWN)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
-		posPlayer.y += 2;
+		posPlayer.y += 1;
+
+		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y -= 1;
+			sprite->changeAnimation(PUJA);
+		}
 		//MIREM SI TENIM UNA ESCAALA
 
+	}else if (Game::instance().getKey(GLFW_KEY_SPACE)) {
+		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
+		sprite->changeAnimation(DISPARA);
+		
 	}
 
-	else sprite->changeAnimation(DISPARA);
+
+	else sprite->changeAnimation(STAY);
 	
+
+
 	sprite->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y)));
 }
 
 void Player::render()
 {
 	sprite->render();
+	
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -109,6 +135,12 @@ void Player::setPosition(const glm::vec2 &pos)
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
+
+glm::ivec2 Player::getPosition()  {
+	return posPlayer;
+}
+
+
 
 
 

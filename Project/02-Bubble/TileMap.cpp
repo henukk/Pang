@@ -252,44 +252,52 @@ bool TileMap::collisionMoveRight(const glm::ivec2& pos, const glm::ivec2& size) 
 	return false;
 }
 
-bool TileMap::collisionMoveDown(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const
+bool TileMap::collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size) const
 {
 	int x0, x1, y;
 
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
 	x0 = pos.x / tileSize;
 	x1 = (pos.x + size.x - 1) / tileSize;
-	y = (pos.y + size.y - 1) / tileSize;
+
+	// Calcula la posición del tile justo arriba del objeto
+	y = pos.y / tileSize; // Restamos 1 para obtener el tile encima del objeto
+
+	// Itera sobre los tiles en el rango horizontal del objeto
 	for (int x = x0; x <= x1; x++)
 	{
-		if (map[y * mapSize.x + x] != 0)
-		{
-			if (*posY - tileSize * y + size.y <= 4)
-			{
-				*posY = tileSize * y - size.y;
-				return true;
-			}
-		}
+		// Verifica si el tile actual es sólido. También comprueba que 'y' no es negativo para evitar índices fuera de rango.
+		if (y >= 0 && map[y * mapSize.x + x] != 0)
+			return true; // Retorna true si hay colisión
 	}
 
-	return false;
+	return false; // No hay colisión
 }
-bool TileMap::collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const {
+
+
+bool TileMap::collisionMoveDown(const glm::ivec2& pos, const glm::ivec2& size) const
+{
 	int x0, x1, y;
 
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
 	x0 = pos.x / tileSize;
 	x1 = (pos.x + size.x - 1) / tileSize;
+
+	// Calcula la posición del tile justo debajo del objeto
 	y = (pos.y + size.y - 1) / tileSize;
 
-	for (int x = x0; x <= x1; x++) {
-		if (map[y * mapSize.x + x] != 0) {
-			if (*posY - (pos.y / tileSize * mapSize.y) + size.y <= 4) {
-				*posY = pos.y / tileSize * mapSize.y + size.y;
-				return true;
-			}
-		}
+	// Itera sobre los tiles en el rango horizontal del objeto
+	for (int x = x0; x <= x1; x++)
+	{
+		// Verifica si el tile actual es sólido
+		if (map[y * mapSize.x + x] != 0)
+			return true; // Retorna true si hay colisión
 	}
-	return false;
+
+	return false; // No hay colisión
 }
+
+
 
 
 

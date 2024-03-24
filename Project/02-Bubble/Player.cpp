@@ -58,14 +58,6 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	
 }
 
-void Player::shootHarpoon() {
-	Harpoon* newHarpoon = new Harpoon();
-	newHarpoon->init(glm::vec2(posPlayer.x + 16, posPlayer.y), texProgram); // Ajusta según la posición del jugador
-	newHarpoon->setTileMap(map);
-	harpoons.push_back(newHarpoon); // Añade el nuevo arpón al vector
-}
-
-
 
 
 void Player::update(int deltaTime)
@@ -93,34 +85,36 @@ void Player::update(int deltaTime)
 		}
 	}
 	else if(Game::instance().getKey(GLFW_KEY_UP)) {
-		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
-		posPlayer.y -= 2;
+		if (sprite->animation() != PUJA) 
+			sprite->changeAnimation(PUJA);
+		posPlayer.y -= 1;
+		if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y += 1;
+			sprite->changeAnimation(PUJA);
+		}
 		//MIREM SI TENIM UNA ESCAALA
 		
 	}else if (Game::instance().getKey(GLFW_KEY_DOWN)) {
 		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
-		posPlayer.y += 2;
+		posPlayer.y += 1;
+
+		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y -= 1;
+			sprite->changeAnimation(PUJA);
+		}
 		//MIREM SI TENIM UNA ESCAALA
 
 	}else if (Game::instance().getKey(GLFW_KEY_SPACE)) {
 		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		sprite->changeAnimation(DISPARA);
-		shootHarpoon();
+		
 	}
 
 
 	else sprite->changeAnimation(STAY);
 	
-	for (auto it = harpoons.begin(); it != harpoons.end(); ) {
-		(*it)->update(deltaTime);
-		if (!(*it)->isAlive()) {
-			delete* it; // Elimina el objeto arpón
-			it = harpoons.erase(it); // Elimina el puntero del vector y actualiza el iterador
-		}
-		else {
-			++it;
-		}
-	}
 
 
 	sprite->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y)));
@@ -129,11 +123,7 @@ void Player::update(int deltaTime)
 void Player::render()
 {
 	sprite->render();
-	for (Harpoon* harpoon : harpoons) {
-		if (harpoon->isAlive()) {
-			harpoon->render();
-		}
-	}
+	
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -145,6 +135,10 @@ void Player::setPosition(const glm::vec2 &pos)
 {
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+}
+
+glm::ivec2 Player::getPosition()  {
+	return posPlayer;
 }
 
 

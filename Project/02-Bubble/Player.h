@@ -23,6 +23,7 @@ public:
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
 	void shootHarpoon();
+	glm::ivec2 getPosition();
 	
 private:
 	bool bStairs;

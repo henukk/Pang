@@ -44,6 +44,12 @@ void Scene::init()
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * (SCREEN_WIDTH/SCREEN_X), INIT_PLAYER_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
 	player->setTileMap(map);
 
+
+	harpoon = new Harpoon();
+	harpoon->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize() - 32));
+	harpoon->setTileMap(map);
+
 	ball = new Ball();
 	ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::SMALL);
 	ball->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
@@ -54,9 +60,16 @@ void Scene::init()
 
 void Scene::update(int deltaTime)
 {
+	if (Game::instance().getKey(GLFW_KEY_SPACE)) {
+		harpoon->shoot(player->getPosition());
+	}
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	ball->update(deltaTime);
+	if (harpoon->shooting())
+		harpoon->update(deltaTime);
+	else
+		harpoon->setPosition(player->getPosition());
 }
 
 void Scene::render()
@@ -71,6 +84,8 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 	player->render();
+	if (harpoon->shooting())
+		harpoon->render();
 	ball->render();
 }
 

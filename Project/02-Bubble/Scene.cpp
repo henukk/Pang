@@ -47,7 +47,7 @@ void Scene::init()
 
 	harpoon = new Harpoon();
 	harpoon->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize() - 32));
+	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
 	harpoon->setTileMap(map);
 
 	ball = new Ball();

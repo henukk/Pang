@@ -56,7 +56,7 @@ void Harpoon::render() {
 
         // Dibuja el cuerpo del arpón repitiendo el sprite del cuerpo según la longitud actual
         float bodySegmentHeight = 16;
-        int numSegments = (- posHarpoon.y + posHarpoonIni.y + 32 - 12) / 16;  //static_cast<int>(length / bodySegmentHeight);
+        int numSegments = (posHarpoonIni.y - posHarpoon.y +176 - 16) / 16;  //static_cast<int>(length / bodySegmentHeight);
         for (int i = 0; i < numSegments; ++i) {
             bodySprite->setPosition(glm::vec2(float( posHarpoon.x), float(posHarpoon.y + 12 + i * 16)));
             bodySprite->render();
@@ -84,8 +84,8 @@ void Harpoon::setPosition(const glm::vec2& pos)
 {
     posHarpoon.x = pos.x;
     posHarpoon.y = pos.y;
-    tipSprite->setPosition(glm::vec2(float(posHarpoon.x), float( posHarpoon.y)));
-    bodySprite->setPosition(glm::vec2(float( posHarpoon.x), float( posHarpoon.y + 12)));
+    tipSprite->setPosition(glm::vec2(float(posHarpoon.x), float( posHarpoon.y )));
+    bodySprite->setPosition(glm::vec2(float( posHarpoon.x), float( posHarpoon.y + 12 )));
 }
 
 

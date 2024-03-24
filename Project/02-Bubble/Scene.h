@@ -31,6 +31,7 @@ private:
 private:
 	TileMap *map;
 	Player *player;
+	Ball* ball;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

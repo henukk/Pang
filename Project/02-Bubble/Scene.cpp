@@ -3,19 +3,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+#include "Ball.h"
 
 
 #define SCREEN_X 48
 #define SCREEN_Y 30
 
-#define INIT_PLAYER_X_TILES 5
-#define INIT_PLAYER_Y_TILES 5
+#define INIT_PLAYER_X_TILES 22
+#define INIT_PLAYER_Y_TILES 21
+
+#define INIT_BALL_X_TILES 22
+#define INIT_BALL_Y_TILES 10
 
 
 Scene::Scene()
 {
 	map = NULL;
 	player = NULL;
+	ball = NULL;
 }
 
 Scene::~Scene()
@@ -24,6 +29,8 @@ Scene::~Scene()
 		delete map;
 	if(player != NULL)
 		delete player;
+	if (ball != NULL)
+		delete ball;
 }
 
 
@@ -43,6 +50,10 @@ void Scene::init()
 	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize() - 32));
 	harpoon->setTileMap(map);
 
+	ball = new Ball();
+	ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::SMALL);
+	ball->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
+
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	currentTime = 0.0f;
 }
@@ -54,6 +65,7 @@ void Scene::update(int deltaTime)
 	}
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	ball->update(deltaTime);
 	if (harpoon->shooting())
 		harpoon->update(deltaTime);
 	else
@@ -74,6 +86,7 @@ void Scene::render()
 	player->render();
 	if (harpoon->shooting())
 		harpoon->render();
+	ball->render();
 }
 
 void Scene::initShaders()

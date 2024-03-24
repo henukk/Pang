@@ -28,6 +28,7 @@ public:
 private:
     BALL_COLOR color;
     BALL_SIZE size;
+    glm::vec2 boxSize;
 
     Texture spritesheet;
     Sprite* sprite;

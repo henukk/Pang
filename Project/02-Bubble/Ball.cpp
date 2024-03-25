@@ -96,48 +96,55 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 
 void Ball::update(int deltaTime)
 {
-	// Variables de movimiento y física
-	int speedX = 2;      // Velocidad horizontal (píxeles por actualización)
-	int gravity = 1;     // Gravedad (píxeles por actualización^2)
-	int jumpForce = 10;  // Fuerza de salto (píxeles por actualización)
+	const int speedX = 1;
 
-	// Variables estáticas para mantener el estado entre llamadas
+	const int gravity = 1;
+	const int gravityFactor = 8;
+	const int jumpForce = 5;
+	const int maxGravity = 5;
+
+	static int gravityCounter = 0;
+	static int jumpCounter = 0;
+
 	static int velocityX = speedX;
 	static int velocityY = 0;
 	static bool onGround = false;
 
 	sprite->update(deltaTime);
 
-	// Movimiento horizontal
 	posBall.x += velocityX;
 
-	// Detección de colisión y rebote horizontal
 	if (map->collisionMoveLeft(posBall, boxSize) || map->collisionMoveRight(posBall, boxSize))
 	{
-		velocityX = -velocityX; // Cambia la dirección horizontal
+		posBall.x -= velocityX;
+		velocityX = -velocityX;
 	}
 
 	if (!onGround)
 	{
-		velocityY += gravity;
-		if (velocityY > 5) {
-			velocityY = 5;
+		gravityCounter += gravity;
+		if (gravityCounter > gravityFactor) {
+			gravityCounter = 0;
+			velocityY += 1;
+		}
+		if (velocityY > maxGravity) {
+			velocityY = maxGravity;
 		}
 	}
 
-	// Movimiento vertical
 	posBall.y += velocityY;
 
 	// Detección de colisión y rebote vertical
-	if (map->collisionMoveUp(posBall, boxSize, &posBall.y))
+	if (map->collisionMoveUp(posBall, boxSize))
 	{
-		velocityY = -jumpForce; // Aplicar fuerza de salto al rebotar hacia arriba
-		onGround = false;
+		//velocityY = 0; // Detener el movimiento hacia arriba
 	}
-	if (map->collisionMoveDown(posBall, boxSize, &posBall.y))
+	if (map->collisionMoveDown(posBall, boxSize))
 	{
-		onGround = true; // La pelota está en el suelo
-		velocityY = 0;   // Resetear la velocidad vertical
+		gravityCounter = 0;
+		posBall.y -= velocityY;
+		onGround = true; // La bola está en el suelo
+		velocityY = -jumpForce; // Resetear la velocidad vertical para el rebote
 	}
 	else
 	{

@@ -4,13 +4,17 @@
 
 #include <GLFW/glfw3.h>
 #include "Scene.h"
-
+#include "Menu.h"
 
 #define SCREEN_WIDTH (48*8)
 #define SCREEN_HEIGHT (30*8)
 
 
 // Game is a singleton (a class with a single instance) that represents our whole application
+enum GameState {
+	GAME_MENU,
+	GAME_PLAYING
+};
 
 
 class Game
@@ -45,9 +49,10 @@ private:
 	bool keys[GLFW_KEY_LAST+1]; // Store key states so that 
 							    // we can have access at any time
 	Scene scene;
+	GameState state;
+	Menu menu;
 
 };
-
 
 #endif // _GAME_INCLUDE
 

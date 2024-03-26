@@ -51,6 +51,7 @@ private:
 	Scene scene;
 	GameState state;
 	Menu menu;
+	string level;
 
 };
 

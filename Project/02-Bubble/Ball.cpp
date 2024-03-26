@@ -113,11 +113,15 @@ void Ball::update(int deltaTime)
 	sprite->update(deltaTime);
 
 	posBall.x += velocityX;
-
+	
 	if (map->collisionMoveLeft(posBall, boxSize) || map->collisionMoveRight(posBall, boxSize))
 	{
 		posBall.x -= velocityX;
 		velocityX = -velocityX;
+	}
+	if (map->collisionMoveUp(posBall, boxSize))
+	{
+		velocityY = 0; // Detener el movimiento hacia arriba
 	}
 
 	if (!onGround)
@@ -135,10 +139,7 @@ void Ball::update(int deltaTime)
 	posBall.y += velocityY;
 
 	// Detección de colisión y rebote vertical
-	if (map->collisionMoveUp(posBall, boxSize))
-	{
-		//velocityY = 0; // Detener el movimiento hacia arriba
-	}
+	
 	if (map->collisionMoveDown(posBall, boxSize))
 	{
 		gravityCounter = 0;
@@ -169,4 +170,25 @@ void Ball::setPosition(const glm::vec2& pos)
 {
 	posBall = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posBall.x), float(tileMapDispl.y + posBall.y)));
+}
+
+glm::vec2 Ball::getPosition()
+{
+	return posBall;
+}
+
+
+bool Ball::isHitByHarpoon(Harpoon& harpoon) {
+	// Asumiendo que tienes métodos para obtener la posición y el tamaño del sprite del arpón
+	glm::vec2 harpoonPos = harpoon.getPosition();
+	int harpoonSize = harpoon.getSize();
+
+	// Comprobar si las cajas de colisión se solapan
+	return !(posBall.x + boxSize.x < harpoonPos.x || posBall.x > harpoonPos.x + 8 ||
+		posBall.y + boxSize.y < harpoonPos.y || posBall.y > harpoonPos.y + harpoonSize);
+}
+
+glm::vec2 Ball::getSize()
+{
+	return boxSize;
 }

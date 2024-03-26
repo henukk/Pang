@@ -1,6 +1,6 @@
+// Scene.h
 #ifndef _SCENE_INCLUDE
 #define _SCENE_INCLUDE
-
 
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
@@ -9,36 +9,34 @@
 #include "Ball.h"
 #include "Harpoon.h"
 
-
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
 
-
 class Scene
 {
-
 public:
-	Scene();
-	~Scene();
+    Scene();
+    ~Scene();
 
-	void init();
-	void update(int deltaTime);
-	void render();
-
-private:
-	void initShaders();
+    void init(string level);
+    void update(int deltaTime);
+    void render();
+    void splitBall(int ballIndex);
 
 private:
-	TileMap *map;
-	Player *player;
-	Ball* ball;
-	ShaderProgram texProgram;
-	float currentTime;
-	glm::mat4 projection;
-	Harpoon* harpoon;
+    void initShaders();
 
+    
+
+private:
+    TileMap* map;
+    Player* player;
+    Ball* ball;  // La pelota original; probablemente no sea necesaria si usas el vector 'balls'
+    Harpoon* harpoon;
+    ShaderProgram texProgram;
+    float currentTime;
+    glm::mat4 projection;
+    std::vector<Ball*> balls; // Vector para manejar múltiples pelotas
 };
 
-
 #endif // _SCENE_INCLUDE
-

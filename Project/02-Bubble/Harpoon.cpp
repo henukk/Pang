@@ -32,7 +32,7 @@ void Harpoon::update(int deltaTime) {
         posHarpoon.y -= 2; 
 
         // Llama a collisionMoveUp pasando la dirección de newYPosition como tercer argumento.
-        if (map->collisionMoveUp(glm::ivec2(int(posHarpoon.x), int(posHarpoon.y)), glm::ivec2(9, 12))) {
+        if (map->collisionMoveUp(glm::ivec2(int(posHarpoon.x), int(posHarpoon.y) ), glm::ivec2(9, 12))) {
             posHarpoon.y += 2;
             alive = false; // Si hay colisión, marca el arpón como no activo.
             
@@ -97,6 +97,14 @@ void Harpoon::shoot(const glm::vec2& pos)
 
 bool Harpoon::shooting() {
     return alive;
+}
+
+glm::vec2 Harpoon::getPosition() {
+    return posHarpoon;
+}
+
+int Harpoon::getSize() {
+    return length;
 }
 
 

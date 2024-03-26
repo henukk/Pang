@@ -34,10 +34,10 @@ Scene::~Scene()
 }
 
 
-void Scene::init()
+void Scene::init(string level)
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(0, 0), texProgram);
+	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
 
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -54,6 +54,8 @@ void Scene::init()
 	ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
 	ball->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
 	ball->setTileMap(map);
+	balls.push_back(ball);
+
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	currentTime = 0.0f;
@@ -66,11 +68,21 @@ void Scene::update(int deltaTime)
 	}
 	currentTime += deltaTime;
 	player->update(deltaTime);
-	ball->update(deltaTime);
+	for (auto& ball : balls) {
+		ball->update(deltaTime);
+	}
 	if (harpoon->shooting())
 		harpoon->update(deltaTime);
 	else
 		harpoon->setPosition(player->getPosition());
+
+	for (int i = 0; i < balls.size(); ++i) {
+		if (harpoon->shooting() && balls[i]->isHitByHarpoon(*harpoon)) {
+			splitBall(i);  // Pasar índice de la pelota que fue golpeada
+			harpoon->kill();
+			break;  // Asumiendo que un arpón solo puede golpear una pelota a la vez
+		}
+	}
 }
 
 void Scene::render()
@@ -87,7 +99,10 @@ void Scene::render()
 	player->render();
 	if (harpoon->shooting())
 		harpoon->render();
-	ball->render();
+	for (auto ball : balls) {
+        ball->render();
+    }
+
 }
 
 void Scene::initShaders()
@@ -119,6 +134,30 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
+
+
+
+void Scene::splitBall(int ballIndex) {
+	// Aquí necesitas el índice de la pelota en el vector para dividirla
+	Ball* hitBall = balls[ballIndex];
+	glm::vec2 pos = hitBall->getPosition();
+	glm::ivec2 size = hitBall->getSize();
+
+	// Crear dos nuevas instancias de Ball de tamaño MEDIUM
+	Ball* newBall1 = new Ball();
+	newBall1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::MEDIUM);
+	newBall1->setPosition(glm::vec2(pos.x - size.x / 4, pos.y));  // Ajustar según sea necesario
+
+	Ball* newBall2 = new Ball();
+	newBall2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::MEDIUM);
+	newBall2->setPosition(glm::vec2(pos.x + size.x / 4, pos.y));  // Ajustar según sea necesario
+
+	// Eliminar la pelota golpeada y agregar las nuevas pelotas al vector
+	delete hitBall;
+	balls[ballIndex] = newBall1;  // Reemplazar la pelota golpeada por una de las nuevas
+	balls.push_back(newBall2);  // Agregar la otra pelota al final del vector
+}
+
 
 
 

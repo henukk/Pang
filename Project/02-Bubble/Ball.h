@@ -3,6 +3,7 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
+#include "Harpoon.h"
 
 class Ball
 {
@@ -24,6 +25,9 @@ public:
 
     void setTileMap(TileMap* tileMap);
     void setPosition(const glm::vec2& pos);
+    glm::vec2 getPosition();
+    bool isHitByHarpoon(Harpoon& harpoon);
+    glm::vec2 getSize();
 
 private:
     BALL_COLOR color;

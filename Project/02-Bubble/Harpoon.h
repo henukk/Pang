@@ -18,6 +18,8 @@ public:
     void setPosition(const glm::vec2& pos);
     void shoot(const glm::vec2& pos);
     bool shooting();
+    glm::vec2 getPosition();
+    int getSize();
 private:
 
     glm::vec2 tileMapDispl, posHarpoonIni, posHarpoon, posPlayer;

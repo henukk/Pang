@@ -10,7 +10,7 @@ void Game::init() {
     state = GAME_MENU; // Iniciar en el menú
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     menu.init();
-    scene.init();
+    
 }
 
 bool Game::update(int deltaTime) {
@@ -53,6 +53,24 @@ void Game::keyPressed(int key) {
             bPlay = false;
         }
     }
+    else if (state == GAME_MENU && key == GLFW_KEY_1) {
+        // Por ejemplo, entrar a jugar presionando Enter en el menú
+        state = GAME_PLAYING;
+        scene.init("levels/level01.txt");
+    }
+    else if (state == GAME_MENU && key == GLFW_KEY_2) {
+        // Por ejemplo, entrar a jugar presionando Enter en el menú
+        state = GAME_PLAYING;
+        scene.init("levels/level02.txt");
+    }
+    else if (state == GAME_MENU && key == GLFW_KEY_3) {
+        // Por ejemplo, entrar a jugar presionando Enter en el menú
+        state = GAME_PLAYING;
+        scene.init("levels/level03.txt");
+    }
+
+
+
     keys[key] = true;
 }
 

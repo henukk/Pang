@@ -31,7 +31,6 @@ private:
 private:
     TileMap* map;
     Player* player;
-    Ball* ball;  // La pelota original; probablemente no sea necesaria si usas el vector 'balls'
     Harpoon* harpoon;
     ShaderProgram texProgram;
     float currentTime;

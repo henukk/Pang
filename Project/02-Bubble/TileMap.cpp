@@ -133,21 +133,21 @@ bool TileMap::loadLevel(const string& levelFile)
 	sstream >> tilesheetSize.x >> tilesheetSize.y;
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 
+
 	map = new int[mapSize.x * mapSize.y];
-	for (int j = 0; j < mapSize.y; j++)
-	{
-		for (int i = 0; i < mapSize.x; i++)
-		{
-			fin.get(tile);
-			if (tile == ' ')
-				map[j * mapSize.x + i] = 0;
-			else
-				map[j * mapSize.x + i] = tile - int('0');
+	for (int j = 0; j < mapSize.y; j++) {
+		std::getline(fin, line);
+
+		std::stringstream ss(line);
+		std::string token;
+		for (int i = 0; i < mapSize.x; i++) {
+			std::getline(ss, token, ','); // Extrae un número separado por coma
+			int n = std::stoi(token) + 1;
+				map[j * mapSize.x + i] = n; // Convierte la cadena a número
 		}
-		fin.get(tile);
-#ifndef _WIN32
-		fin.get(tile);
-#endif
+	#ifndef _WIN32
+			fin.get(tile);
+	#endif
 	}
 	fin.close();
 

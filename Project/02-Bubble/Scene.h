@@ -32,6 +32,7 @@ private:
     TileMap* map;
     Player* player;
     Harpoon* harpoon;
+    Ball* ball;
     ShaderProgram texProgram;
     float currentTime;
     glm::mat4 projection;

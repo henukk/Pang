@@ -56,17 +56,17 @@ void Game::keyPressed(int key) {
     else if (state == GAME_MENU && key == GLFW_KEY_1) {
         // Por ejemplo, entrar a jugar presionando Enter en el menú
         state = GAME_PLAYING;
-        scene.init("levels/level01.txt");
+        scene.init("levels/stage1-1.txt");
     }
     else if (state == GAME_MENU && key == GLFW_KEY_2) {
         // Por ejemplo, entrar a jugar presionando Enter en el menú
         state = GAME_PLAYING;
-        scene.init("levels/level02.txt");
+        scene.init("levels/stage2-1.txt");
     }
     else if (state == GAME_MENU && key == GLFW_KEY_3) {
         // Por ejemplo, entrar a jugar presionando Enter en el menú
         state = GAME_PLAYING;
-        scene.init("levels/level03.txt");
+        scene.init("levels/stage2-1.txt");
     }
 
 

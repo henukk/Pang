@@ -26,17 +26,15 @@ public:
 private:
     void initShaders();
 
-    
 
 private:
     TileMap* map;
     Player* player;
     Harpoon* harpoon;
-    Ball* ball;
     ShaderProgram texProgram;
     float currentTime;
     glm::mat4 projection;
-    std::vector<Ball*> balls; // Vector para manejar múltiples pelotas
+    std::vector<Ball*> balls;
 };
 
 #endif // _SCENE_INCLUDE

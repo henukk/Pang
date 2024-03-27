@@ -8,6 +8,7 @@
 void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL_COLOR color, BALL_SIZE size) {
 	this->color = color;
 	this->size = size;
+	status = true;
 
 	spritesheet.loadFromFile("images/Balloons.png", TEXTURE_PIXEL_FORMAT_RGBA);
 
@@ -23,30 +24,35 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 		sizeInSpriteSheet = glm::vec2(bitsSize * 6, bitsSize * 5);
 		offset = 0;
 		boxSize = glm::vec2(48, 40);
+		posUp = 2 * 8;
 		break;
 	case Ball::BIG:
 		quadSize = glm::ivec2(32, 32);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 4, bitsSize * 4);
 		offset = 6;
 		boxSize = glm::vec2(32, 32);
+		posUp = 8 * 8;
 		break;
 	case Ball::MEDIUM:
 		quadSize = glm::ivec2(16, 16);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 2, bitsSize * 2);
 		offset = 10;
 		boxSize = glm::vec2(16, 16);
+		posUp = 13 * 8;
 		break;
 	case Ball::SMALL:
 		quadSize = glm::ivec2(8, 8);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 1, bitsSize * 1);
 		offset = 12;
 		boxSize = glm::vec2(8, 8);
+		posUp = 19 * 8;
 		break;
 	default:
 		quadSize = glm::ivec2(48, 40);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 6, bitsSize * 5);
 		offset = 0;
 		boxSize = glm::vec2(8 * 6 / 2, 8 * 5 / 2);
+		posUp = 2 * 8;
 		break;
 	}
 
@@ -94,38 +100,28 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 
 }
 
-void Ball::update(int deltaTime)
-{
-	const int speedX = 1;
-
-	const int gravity = 1;
-	const int gravityFactor = 8;
-	const int jumpForce = 5;
-	const int maxGravity = 5;
-
-	static int gravityCounter = 0;
-	static int jumpCounter = 0;
-
-	static int velocityX = speedX;
-	static int velocityY = 0;
-	static bool onGround = false;
+void Ball::update(int deltaTime) {
+	if (!status)
+		return;
 
 	sprite->update(deltaTime);
 
+	// X algo
 	posBall.x += velocityX;
-	
+
 	if (map->collisionMoveLeft(posBall, boxSize) || map->collisionMoveRight(posBall, boxSize))
 	{
 		posBall.x -= velocityX;
 		velocityX = -velocityX;
 	}
-	if (map->collisionMoveUp(posBall, boxSize))
-	{
-		velocityY = 0; // Detener el movimiento hacia arriba
-	}
 
-	if (!onGround)
-	{
+	// Y algo
+
+	posBall.y += velocityY;
+
+	if (energy >= 0) {
+		if (velocityY < 0)
+			velocityY = 0;
 		gravityCounter += gravity;
 		if (gravityCounter > gravityFactor) {
 			gravityCounter = 0;
@@ -135,26 +131,35 @@ void Ball::update(int deltaTime)
 			velocityY = maxGravity;
 		}
 	}
+	else {
+		tmpSpeed = energy / 4;
+		if (tmpSpeed < -maxGravity)
+			tmpSpeed = -maxGravity;
+		if (tmpSpeed > -1)
+			tmpSpeed = -1;
+		velocityY = tmpSpeed;
+		energy = posUp - posBall.y;
+	}
 
-	posBall.y += velocityY;
-
-	// Detección de colisión y rebote vertical
-	
 	if (map->collisionMoveDown(posBall, boxSize))
 	{
-		gravityCounter = 0;
-		posBall.y -= velocityY;
-		onGround = true; // La bola está en el suelo
-		velocityY = -jumpForce; // Resetear la velocidad vertical para el rebote
+		while (map->collisionMoveDown(posBall, boxSize))
+			posBall.y -= 1;
+		velocityY = 0;
+		energy = posUp - posBall.y;
 	}
-	else
+
+	if (map->collisionMoveUp(posBall, boxSize))
 	{
-		onGround = false;
+		while (map->collisionMoveUp(posBall, boxSize))
+			posBall.y += 1;
+		velocityY = 0;
+		energy = 0;
 	}
+
 
 	sprite->setPosition(glm::vec2(float(posBall.x), float(posBall.y)));
 }
-
 
 void Ball::render()
 {
@@ -191,4 +196,27 @@ bool Ball::isHitByHarpoon(Harpoon& harpoon) {
 glm::vec2 Ball::getSize()
 {
 	return boxSize;
+}
+
+Ball::BALL_COLOR Ball::getColor() {
+	return color;
+}
+Ball::BALL_SIZE Ball::getType() {
+	return size;
+}
+
+void Ball::setDirection(int dir) {
+	velocityX = dir;
+}
+
+int Ball::getDirection() {
+	return velocityX;
+}
+
+bool Ball::getStatus() {
+	return status;
+}
+
+void Ball::kill() {
+	status = false;
 }

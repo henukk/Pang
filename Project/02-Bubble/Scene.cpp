@@ -20,7 +20,7 @@ Scene::Scene()
 {
 	map = NULL;
 	player = NULL;
-	ball = NULL;
+	
 }
 
 Scene::~Scene()
@@ -29,8 +29,6 @@ Scene::~Scene()
 		delete map;
 	if(player != NULL)
 		delete player;
-	if (ball != NULL)
-		delete ball;
 }
 
 

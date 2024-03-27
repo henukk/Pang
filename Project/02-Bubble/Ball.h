@@ -29,6 +29,14 @@ public:
     bool isHitByHarpoon(Harpoon& harpoon);
     glm::vec2 getSize();
 
+    BALL_COLOR getColor();
+    BALL_SIZE getType();
+    void setDirection(int dir);
+    int getDirection();
+
+    bool getStatus();
+    void kill();
+
 private:
     BALL_COLOR color;
     BALL_SIZE size;
@@ -40,6 +48,21 @@ private:
     TileMap* map;
 
     glm::ivec2 tileMapDispl, posBall;
+
+    int posUp;
+    int velocityX = 1;
+    int gravityCounter = 0;
+    int gravityFactor = 9;
+    int gravity = 1;
+
+    int maxGravity = 2;
+
+    int velocityY = 0;
+    int energy = 0;
+    int tmpSpeed;
+
+
+    bool status;
 };
 
 #endif // _BALL_INCLUDE

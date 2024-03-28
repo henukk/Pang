@@ -99,8 +99,8 @@ void Scene::update(int deltaTime)
 		if (ball->getStatus() && checkCollision(ball, player)) {
 			player->hit();
 			--lives;
-			//if(lives > 0)reLoad(currentLevel);
-			//else Game::instance().changeState(GAME_MENU);
+			if(lives > 0)reLoad(currentLevel);
+			else Game::instance().changeState(GAME_MENU);
 			break;
 		}
 	}

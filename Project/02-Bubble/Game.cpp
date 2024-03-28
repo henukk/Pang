@@ -81,6 +81,9 @@ void Game::keyPressed(int key) {
         // Salir del juego o volver al menú
         if (state == GAME_PLAYING) {
             state = GAME_MENU;
+        }else if (state == GAME_INSTRUCTIONS) {
+            state = GAME_MENU;
+
         }
         else {
             bPlay = false;

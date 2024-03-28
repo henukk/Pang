@@ -62,6 +62,7 @@ private:
     int tmpSpeed;
 
 
+    int deadCounter = 0;
     bool status;
 };
 

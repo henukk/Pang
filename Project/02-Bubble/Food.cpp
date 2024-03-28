@@ -27,14 +27,14 @@ void Food::init(int id, int* playerPoints, glm::vec2 initPos, ShaderProgram& sha
 	if (id < 20) {
 		quadSize = glm::ivec2(16, 16);
 		sizeInSpriteSheet = glm::vec2(bitsSize, bitsSize);
-		boxSize = glm::vec2(8, 8);
+		boxSize = glm::vec2(16, 16);
 		x = id % 8;
 		y = id / 8;
 	}
 	else if (id < 27) {
 		quadSize = glm::ivec2(16, 8);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 2, bitsSize);
-		boxSize = glm::vec2(16, 8);
+		boxSize = glm::vec2(16, 16);
 		x = (4 + (id - 19) * 2) % 8;
 		y = (4 + (id - 19) * 2) / 8;
 	}

@@ -16,6 +16,7 @@
 #define INIT_BALL_Y_TILES 2
 
 
+
 Scene::Scene()
 {
 	map = NULL;
@@ -38,6 +39,9 @@ Scene::~Scene()
 
 void Scene::init(string level)
 {
+
+
+	
 	currentLevel = level;
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
@@ -63,6 +67,10 @@ void Scene::init(string level)
 	currentTime = 0.0f;
 	lives = 3;
 	score = 0;
+	if (!text.init("fonts/OpenSans-Regular.ttf"))
+		//if(!text.init("fonts/OpenSans-Bold.ttf"))
+		//if(!text.init("fonts/DroidSerif.ttf"))
+		cout << "Could not load font!!!" << endl;
 }
 
 void Scene::update(int deltaTime)
@@ -91,7 +99,6 @@ void Scene::update(int deltaTime)
 		ball->update(deltaTime);
 	}
 	if (done) {
-		//code to end level
 		cout << "eiow" << endl;
 	}
 
@@ -124,6 +131,8 @@ void Scene::render()
 	for (auto ball : balls) {
         ball->render();
     }
+
+	text.render("Videogames!!!", glm::vec2(10, 240 - 20), 12, glm::vec4(1, 1, 1, 1));
 
 }
 

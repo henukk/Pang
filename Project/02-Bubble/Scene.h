@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Harpoon.h"
+#include "SoundManager.h"
+#include "Text.h"
 
 class Scene
 {
@@ -37,6 +39,8 @@ private:
     float currentTime;
     glm::mat4 projection;
     std::vector<Ball*> balls;
+    SoundManager sound;
+    Text text;
 };
 
 #endif // _SCENE_INCLUDE

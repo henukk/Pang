@@ -106,6 +106,10 @@ void Sprite::setPosition(const glm::vec2 &pos)
 	position = pos;
 }
 
+void Sprite::changeTexture(Texture* newTexture) {
+	texture = newTexture;
+}
+
 
 
 

@@ -12,15 +12,16 @@
 
 enum PlayerAnims
 {
-	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA
+	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA, DIE_RIGHT, DIE_LEFT
 };
 
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
-
+	deathAnimationTime = 0.0f;
 	bStairs = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	spritesheetDeath.loadFromFile("images/PlayerDie", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(5);
 
@@ -49,6 +50,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->addKeyframe(PUJA, glm::vec2(0.1, 0.25f));
 		sprite->addKeyframe(PUJA, glm::vec2(0.2, 0.25f));
 		sprite->addKeyframe(PUJA, glm::vec2(0.3, 0.25f));
+	
 		
 		
 	sprite->changeAnimation(0);
@@ -56,8 +58,6 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
-
-
 
 void Player::update(int deltaTime)
 {
@@ -70,7 +70,25 @@ void Player::update(int deltaTime)
 	bool floorDown = map->floorDown(posPlayer, glm::ivec2(32, 32));
 	/*cout << isfalling << endl;
 	cout << posPlayer.x << ' ' << posPlayer.y << endl;*/
-	if(Game::instance().getKey(GLFW_KEY_LEFT) )
+	if (isDead) {
+		if (deathAnimationTime > 0) {
+			// Subtract the time since last update
+			deathAnimationTime -= deltaTime;
+
+			// If the death animation time has elapsed, fall off the screen
+			if (deathAnimationTime <= 0) {
+				// Code to make the player fall indefinitely
+				posPlayer.y += FALL_STEP;
+			}
+		}
+		else {
+			// Code to make the player fall indefinitely if deathAnimationTime is already 0
+			posPlayer.y += FALL_STEP;
+		}
+	}
+	
+	
+	else if(Game::instance().getKey(GLFW_KEY_LEFT) )
 	{
 
 		
@@ -164,6 +182,29 @@ void Player::setPosition(const glm::vec2 &pos)
 glm::ivec2 Player::getPosition()  {
 	return posPlayer;
 }
+
+glm::ivec2 Player::getSize() {
+	return glm::ivec2(32,32);
+}
+
+void Player::hit() {
+	// Assuming 'spritesheetDeath' is already loaded with the death animation texture
+	sprite = Sprite::createSprite(glm::ivec2(40, 32), glm::vec2(0.5, 0.5), &spritesheet, &texProgram);
+	sprite->changeTexture(&spritesheetDeath); // Update the texture if needed
+	sprite->setNumberAnimations(6); // Add a new animation slot if not enough
+
+	sprite->setAnimationSpeed(DIE_RIGHT, 8); // Set the speed of the death animation
+	// Here we are assuming the death animation frames go from (0.0, 0.0) to (0.5, 0.5) as a single row
+	for (float i = 0.0f; i <= 0.5f; i += 0.1f) { // Adjust if the frame step is different
+		sprite->addKeyframe(DIE_RIGHT, glm::vec2(i, 0.f));
+	}
+
+	sprite->changeAnimation(DIE_RIGHT); // Change to the death animation
+	isDead = true; // Set the death flag to true
+	deathAnimationTime = 3000.0f;
+}
+
+
 
 
 

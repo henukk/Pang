@@ -1,81 +1,65 @@
 #include "Menu.h"
 #include <iostream>
+#include <cmath>
 #include <GL/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
+
 // Incluye los headers necesarios para la gestión de shaders
 
-Menu::Menu() : shaderProgram(0) {
-}
-
-Menu::~Menu() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    // No olvides liberar recursos de shaders si es necesario
-}
+#define SCREEN_WIDTH (48*8)
+#define SCREEN_HEIGHT (30*8)
 
 
-
-void Menu::setupShaders() {
-    // Carga, compila y enlaza tus shaders aquí
-    // shaderProgram = createShaderProgram("vertexShader.vs", "fragmentShader.fs");
-}
-
-void Menu::setupBackground() {
-    // Carga la textura de fondo
-    background.loadFromFile("./images/Start.png", TEXTURE_PIXEL_FORMAT_RGBA);
-    background.setWrapS(GL_CLAMP_TO_EDGE);
-    background.setWrapT(GL_CLAMP_TO_EDGE);
-    background.setMinFilter(GL_NEAREST);
-    background.setMagFilter(GL_NEAREST);
-
-    // Prepara los vértices
-    float vertices[] = {
-        // Posiciones          // Coordenadas de Textura
-        0.0f, 0.0f, 0.0f, 0.0f, // Esquina superior izquierda
-        0.0f,  208.f, 0.0f, 1.0f, // Esquina inferior izquierda
-        384.f,  208.f, 1.0f, 1.0f, // Esquina inferior derecha
-
-        0.0f, 0.0f, 0.0f, 0.0f, // Esquina superior izquierda
-        384.f, 208.f, 1.0f, 1.0f, // Esquina inferior derecha
-        384.f, 0.0f, 1.0f, 0.0f // Esquina superior derecha
-    };
-
-    glGenVertexArrays(1, &vaoBackground);
-    glBindVertexArray(vaoBackground);
-
-    glGenBuffers(1, &vboBackground);
-    glBindBuffer(GL_ARRAY_BUFFER, vboBackground);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Aquí asumo que tienes un objeto ShaderProgram llamado 'program'
-    // que ya fue creado y configurado en algún lugar de tu clase.
-    posLocationBackground = program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
-    texCoordLocationBackground = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-}
-
-void Menu::init() {
-    setupBackground();
-    // El resto de tu inicialización...
+void Menu::init()
+{
+	initShaders();
+	map = TileMap::createTileMap("levels/menu.txt", glm::vec2(0, 0), texProgram);
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 }
 
 
-void Menu::update(int deltaTime) {
-    // Lógica de actualización
+
+void Menu::render()
+{
+	glm::mat4 modelview;
+
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	map->render();
+	
+
 }
 
-void Menu::render() {
-    glEnable(GL_TEXTURE_2D);
+void Menu::initShaders()
+{
+	Shader vShader, fShader;
 
-    background.use();
-    glBindVertexArray(vaoBackground);
-    glEnableVertexAttribArray(posLocationBackground);
-    glEnableVertexAttribArray(texCoordLocationBackground);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-void Menu::keyPressed(int key) {
-    // Manejo de la entrada del teclado
-}
-
-void Menu::keyReleased(int key) {
-    // Manejo de la entrada del teclado
+	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
+	if (!vShader.isCompiled())
+	{
+		cout << "Vertex Shader Error" << endl;
+		cout << "" << vShader.log() << endl << endl;
+	}
+	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
+	if (!fShader.isCompiled())
+	{
+		cout << "Fragment Shader Error" << endl;
+		cout << "" << fShader.log() << endl << endl;
+	}
+	texProgram.init();
+	texProgram.addShader(vShader);
+	texProgram.addShader(fShader);
+	texProgram.link();
+	if (!texProgram.isLinked())
+	{
+		cout << "Shader Linking Error" << endl;
+		cout << "" << texProgram.log() << endl << endl;
+	}
+	texProgram.bindFragmentOutput("outColor");
+	vShader.free();
+	fShader.free();
 }

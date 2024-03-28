@@ -1,29 +1,22 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include "TileMap.h"
 
 class Menu {
-public:
-    Menu();
-    virtual ~Menu();
-
-    void init();
-    void update(int deltaTime);
-    void render();
-    void keyPressed(int key);
-    void keyReleased(int key);
-    void setupBackground();
-    void setupShaders();
-
-
-private:
-    unsigned int VBO, VAO;
-    unsigned int shaderProgram; // ID del programa de shader
-
+    public:
     
-    Texture background; // Ya deberías tener esto para la textura de fondo
-    unsigned int vaoBackground, vboBackground;
-    GLint posLocationBackground, texCoordLocationBackground;
 
-    ShaderProgram program;
+        void init();
+        void render();
+
+        void initShaders();
+   
+
+
+    private:
+
+        ShaderProgram texProgram;
+        TileMap* map;
+        glm::mat4 projection;
 
 };

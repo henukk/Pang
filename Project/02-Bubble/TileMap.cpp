@@ -229,7 +229,10 @@ bool TileMap::collisionMoveLeft(const glm::ivec2& pos, const glm::ivec2& size) c
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (map[y * mapSize.x + x] != 0)
+
+
+		int coliderbox = map[y * mapSize.x + x];
+		if (coliderbox != 0 && coliderbox != 13 && coliderbox != 11 && coliderbox != 12 && coliderbox != 45 && coliderbox != 43 && coliderbox != 44)
 			return true;
 	}
 
@@ -373,7 +376,6 @@ bool TileMap::collisionMoveUpPlayer(const glm::ivec2& pos, const glm::ivec2& siz
 	return false; // No hay colisi�n
 }
 
-
 bool TileMap::collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& size) const
 {
 	int x0, x1, y;
@@ -398,8 +400,6 @@ bool TileMap::collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& s
 
 	return false; // No hay colisi�n
 }
-
-
 
 void TileMap::getRightTile(const glm::ivec2& pos, const glm::ivec2& size) {
 

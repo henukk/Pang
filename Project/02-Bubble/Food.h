@@ -13,22 +13,22 @@ public:
     Food();
     ~Food();
 
-    void init(int id, int* playerPoints, glm::vec2 initPos, ShaderProgram& shaderProgram);
+    void init(int id, glm::vec2 initPos, ShaderProgram& shaderProgram);
     void update(int deltaTime);
     void render();
     void setTileMap(TileMap* tileMap);
     bool isAlive();
-private:
+    int checkCollider(glm::vec2 playerPos, glm::vec2 playerSize);
     void kill();
+private:
 
 
     enum BALL_STATUS {
-        NORMAL, BLINKING
+        NORMAL, BLINKING, DEAD
     };
 
 private:
     int id, cyclesCounter;
-    int* playerPoints;
     TileMap* map;
     Texture spritesheet;
     Sprite* sprite;

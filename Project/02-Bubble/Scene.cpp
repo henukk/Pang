@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Game.h"
 #include "Ball.h"
+#include <random>
 
 
 #define SCREEN_X 48
@@ -25,6 +26,7 @@ Scene::Scene()
 	foods.clear();
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
+	std::srand(std::time(nullptr));
 }
 
 Scene::~Scene()
@@ -46,9 +48,8 @@ Scene::~Scene()
 
 void Scene::init(string level)
 {
+	std::srand(std::time(nullptr));
 
-
-	
 	currentLevel = level;
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
@@ -122,6 +123,12 @@ void Scene::update(int deltaTime)
 	for (auto& food : foods) {
 		if (food->isAlive()) {
 			food->update(deltaTime);
+			int points = food->checkCollider(player->getPosition(), player->getSize());
+			if (points > 0) {
+				score += points;
+				food->kill();
+			}
+
 		}
 	}
 
@@ -148,7 +155,7 @@ void Scene::render()
 		food->render();
 	}
 
-	text.render("Videogames!!!", glm::vec2(10, 240 - 20), 12, glm::vec4(1, 1, 1, 1));
+	text.render("Videogames!!!", glm::vec2(0, 0), 12, glm::vec4(1, 1, 1, 1));
 
 }
 
@@ -199,9 +206,11 @@ void Scene::splitBall(int ballIndex) {
 	else comboCounter = 1;
 	lastBallSizeDestoyed = type;
 
+	//food generator
+	int foodPos = 8 + rand() % (360 - 8 + 1);
 	static int eiow = 0;
 	foods.push_back(new Food());
-	foods.back()->init(eiow++, &score, pos, texProgram);
+	foods.back()->init(eiow++, glm::vec2(foodPos, 8), texProgram);
 	foods.back()->setTileMap(map);
 
 	switch (type) {
@@ -211,11 +220,13 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x - size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
 		balls.back()->setDirection(-1);
+		balls.back()->addForce(-10);
 
 		balls.push_back(new Ball());
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::BIG);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		balls.back()->addForce(-10);
 		score += 50 * comboCounter;
 		break;
 	case Ball::BIG:
@@ -224,11 +235,13 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x - size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
 		balls.back()->setDirection(-1);
+		balls.back()->addForce(-10);
 
 		balls.push_back(new Ball());
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::MEDIUM);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		balls.back()->addForce(-10);
 		score += 100 * comboCounter;
 		break;
 	case Ball::MEDIUM:
@@ -237,11 +250,13 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x - size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
 		balls.back()->setDirection(-1);
+		balls.back()->addForce(-10);
 
 		balls.push_back(new Ball());
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::SMALL);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		balls.back()->addForce(-10);
 		score += 150 * comboCounter;
 		break;
 	case Ball::SMALL:
@@ -274,6 +289,8 @@ bool Scene::checkCollision(Ball* ball, Player* player) {
 
 
 void Scene::reLoad(string level) {
+	std::srand(std::time(nullptr));
+
 	// Primero, limpiar los recursos existentes
 	if (map != NULL) {
 		delete map;
@@ -294,6 +311,7 @@ void Scene::reLoad(string level) {
 			delete f;
 		}
 	}
+	foods.clear();
 
 	if (harpoon != NULL) {
 		delete harpoon;

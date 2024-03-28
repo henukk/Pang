@@ -36,6 +36,7 @@ public:
 
     bool getStatus();
     void kill();
+    void addForce(int force);
 
 private:
     BALL_COLOR color;

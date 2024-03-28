@@ -175,7 +175,7 @@ void Ball::update(int deltaTime) {
 		if (tmpSpeed > -1)
 			tmpSpeed = -1;
 		velocityY = tmpSpeed;
-		energy = posUp - posBall.y;
+		energy -= velocityY;//posUp - posBall.y;
 	}
 
 	if (map->collisionMoveDown(posBall, boxSize))
@@ -184,6 +184,8 @@ void Ball::update(int deltaTime) {
 			posBall.y -= 1;
 		velocityY = 0;
 		energy = posUp - posBall.y;
+		if (energy > -10)
+			energy = -20;
 	}
 
 	if (map->collisionMoveUp(posBall, boxSize))
@@ -261,6 +263,10 @@ bool Ball::getStatus() {
 
 void Ball::kill() {
 	status = false;
-	cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaa" << endl;
 	sprite->changeAnimation(EXPLODING);
+
+}
+
+void Ball::addForce(int force) {
+	energy = force;
 }

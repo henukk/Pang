@@ -245,8 +245,11 @@ bool TileMap::collisionMoveRight(const glm::ivec2& pos, const glm::ivec2& size) 
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (map[y * mapSize.x + x] != 0)
+		int coliderbox = map[y * mapSize.x + x];
+		
+		if (coliderbox != 0 && coliderbox != 13 && coliderbox != 11 && coliderbox != 12 && coliderbox != 45 && coliderbox != 43 && coliderbox != 44){
 			return true;
+		}
 	}
 
 	return false;
@@ -290,12 +293,160 @@ bool TileMap::collisionMoveDown(const glm::ivec2& pos, const glm::ivec2& size) c
 	for (int x = x0; x <= x1; x++)
 	{
 		// Verifica si el tile actual es s�lido
+		
 		if (map[y * mapSize.x + x] != 0)
 			return true; // Retorna true si hay colisi�n
 	}
 
 	return false; // No hay colisi�n
 }
+
+bool TileMap::bStairs(const glm::ivec2& pos, const glm::ivec2& size) const {
+    // Calculamos las coordenadas del tile para las esquinas superior izquierda e inferior derecha del objeto
+    int xLeft = pos.x / tileSize;
+    int xRight = (pos.x + size.x - 1) / tileSize;
+    int yTop = pos.y / tileSize;
+    int yBottom = (pos.y + size.y - 1) / tileSize;
+
+    // Verificamos cada tile que el objeto ocupa para ver si alguno es una escalera
+    for (int x = xLeft; x <= xRight; ++x) {
+        for (int y = yTop; y <= yBottom; ++y) {
+            int tileType = map[y * mapSize.x + x];
+            // Si el tile es uno de los tipos que representan escaleras, retornamos true
+            if (tileType == 10 || tileType == 11 || tileType == 12 ||
+                tileType == 45 || tileType == 43 || tileType == 44) {
+                return true; // Coincide con un tile de escalera
+            }
+        }
+    }
+
+    return false; // No coincide con un tile de escalera
+}
+
+bool TileMap::bStairsDown(const glm::ivec2& pos, const glm::ivec2& size) const {
+	// Calculamos las coordenadas del tile para las esquinas superior izquierda e inferior derecha del objeto
+	int xLeft = pos.x / tileSize;
+	int xRight = (pos.x + size.x - 1) / tileSize;
+	int yTop = pos.y / tileSize;
+	int yBottom = (pos.y + size.y - 1) / tileSize + 1; // Incluimos los tiles debajo del objeto
+
+	// Asegurarnos de que yBottom no excede el límite del mapa
+	yBottom = std::min(yBottom, mapSize.y - 1);
+
+	// Verificamos cada tile que el objeto ocupa y los tiles debajo de él para ver si alguno es una escalera
+	for (int x = xLeft; x <= xRight; ++x) {
+		for (int y = yTop; y <= yBottom; ++y) {
+			int tileType = map[y * mapSize.x + x];
+			// Si el tile es uno de los tipos que representan escaleras, retornamos true
+			if (tileType == 10 || tileType == 11 || tileType == 12 ||
+				tileType == 45 || tileType == 43 || tileType == 44) {
+				return true; // Coincide con un tile de escalera
+			}
+		}
+	}
+
+	return false; // No coincide con un tile de escalera
+}
+
+
+bool TileMap::collisionMoveUpPlayer(const glm::ivec2& pos, const glm::ivec2& size) const
+{
+	int x0, x1, y;
+
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+
+	// Calcula la posici�n del tile justo arriba del objeto
+	y = pos.y / tileSize; // Restamos 1 para obtener el tile encima del objeto
+
+	// Itera sobre los tiles en el rango horizontal del objeto
+	for (int x = x0; x <= x1; x++)
+	{
+		// Verifica si el tile actual es s�lido. Tambi�n comprueba que 'y' no es negativo para evitar �ndices fuera de rango.
+		int tileType = map[y * mapSize.x + x];
+		if (y >= 0 && tileType != 0 && tileType != 13 && tileType != 11 && tileType != 12 &&
+			tileType != 45 && tileType != 43 && tileType != 44)
+			return true; // Retorna true si hay colisi�n
+	}
+
+	return false; // No hay colisi�n
+}
+
+
+bool TileMap::collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& size) const
+{
+	int x0, x1, y;
+
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+
+	// Calcula la posici�n del tile justo debajo del objeto
+	y = (pos.y + size.y - 1) / tileSize;
+
+	// Itera sobre los tiles en el rango horizontal del objeto
+	for (int x = x0; x <= x1; x++)
+	{
+		// Verifica si el tile actual es s�lido
+		int tileType = map[y * mapSize.x + x];
+		if (tileType != 0 && tileType != 13 && tileType != 11 && tileType != 12 &&
+			tileType != 45 && tileType != 43 && tileType != 44)
+
+			return true; // Retorna true si hay colisi�n
+	}
+
+	return false; // No hay colisi�n
+}
+
+
+
+void TileMap::getRightTile(const glm::ivec2& pos, const glm::ivec2& size) {
+
+	int x0, x1, y;
+
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+
+	// Calcula la posici�n del tile justo debajo del objeto
+	y = (pos.y + size.y - 1) / tileSize;
+
+	// Itera sobre los tiles en el rango horizontal del objeto
+	for (int x = x0; x <= x1; x++)
+	{
+		// Verifica si el tile actual es s�lido
+		cout << map[y * mapSize.x + x] << endl;
+
+	}
+}
+
+
+bool TileMap::floorDown(const glm::ivec2& pos, const glm::ivec2& size) const
+{
+	int x0, x1, y;
+
+	// Calcula las posiciones de los tiles en los extremos izquierdo y derecho del objeto
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+
+	// Calcula la posici�n del tile justo debajo del objeto
+	y = (pos.y + size.y - 1) / tileSize;
+
+	// Itera sobre los tiles en el rango horizontal del objeto
+	for (int x = x0; x <= x1; x++)
+	{
+		// Verifica si el tile actual es s�lido
+		int tileType = map[y * mapSize.x + x];
+		if (tileType == 0)
+
+			return true; // Retorna true si hay colisi�n
+	}
+
+	return false; // No hay colisi�n
+}
+
+
 
 
 

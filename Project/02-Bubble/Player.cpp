@@ -61,9 +61,19 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime)
 {
+
+
 	sprite->update(deltaTime);
-	if(Game::instance().getKey(GLFW_KEY_LEFT))
+	bool onStairs = map->bStairs(posPlayer, glm::ivec2(32, 32));
+	bool downStairs = map->bStairsDown(posPlayer, glm::ivec2(32, 32));
+	bool isfalling = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs;
+	bool floorDown = map->floorDown(posPlayer, glm::ivec2(32, 32));
+	/*cout << isfalling << endl;
+	cout << posPlayer.x << ' ' << posPlayer.y << endl;*/
+	if(Game::instance().getKey(GLFW_KEY_LEFT) )
 	{
+
+		
 		if(sprite->animation() != MOVE_LEFT)
 			sprite->changeAnimation(MOVE_LEFT);
 		posPlayer.x -= 2;
@@ -72,46 +82,61 @@ void Player::update(int deltaTime)
 			posPlayer.x += 2;
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_RIGHT))
+	else if(Game::instance().getKey(GLFW_KEY_RIGHT) )
 	{
+
+		
 		if(sprite->animation() != MOVE_RIGHT)
 			sprite->changeAnimation(MOVE_RIGHT);
 		posPlayer.x += 2;
 		if(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
-		{
-			posPlayer.x -= 2;
+		{	posPlayer.x -= 1;
+		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+			posPlayer.x -= 1;
 			sprite->changeAnimation(MOVE_RIGHT);
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_UP)) {
-		if (sprite->animation() != PUJA) 
+
+	else if(Game::instance().getKey(GLFW_KEY_UP) && onStairs) {
+		if (sprite->animation() != PUJA )
 			sprite->changeAnimation(PUJA);
 		posPlayer.y -= 1;
-		if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveUpPlayer(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.y += 1;
 			sprite->changeAnimation(PUJA);
 		}
-		//MIREM SI TENIM UNA ESCAALA
+		//MIREM SI TENIM UNA ESCALA
 		
-	}else if (bStairs && Game::instance().getKey(GLFW_KEY_DOWN)) {
-		if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
+	}else if (Game::instance().getKey(GLFW_KEY_DOWN) && downStairs) {
+		if (sprite->animation() != PUJA) 
+			sprite->changeAnimation(PUJA);
 		posPlayer.y += 1;
 
-		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveDownPlayer(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.y -= 1;
 			sprite->changeAnimation(PUJA);
 		}
-		//MIREM SI TENIM UNA ESCAALA
+		//MIREM SI TENIM UNA ESCALA
 
 	}else if (Game::instance().getKey(GLFW_KEY_SPACE)) {
 		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		sprite->changeAnimation(DISPARA);
 		
 	}
+	else if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs) {
+		posPlayer.y += 2;
+		sprite->changeAnimation(STAY);
 
-
+		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y -= 2;
+			sprite->changeAnimation(STAY);
+		}
+	}
+	
+	
 	else sprite->changeAnimation(STAY);
 	
 

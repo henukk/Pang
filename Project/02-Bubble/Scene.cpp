@@ -29,10 +29,8 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	if(map != NULL)
-		delete map;
-	if(player != NULL)
-		delete player;
+	if(map != NULL)delete map;
+	if(player != NULL)delete player;
 	for (Ball* b : balls) {
 		if (b != NULL)
 			delete b;
@@ -48,7 +46,6 @@ void Scene::init(string level)
 {
 
 
-	
 	currentLevel = level;
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
@@ -78,6 +75,7 @@ void Scene::init(string level)
 		//if(!text.init("fonts/OpenSans-Bold.ttf"))
 		//if(!text.init("fonts/DroidSerif.ttf"))
 		cout << "Could not load font!!!" << endl;
+	sound.playBGM("music/Stage1-1.mp3", true);
 }
 
 void Scene::update(int deltaTime)
@@ -148,8 +146,7 @@ void Scene::render()
 		food->render();
 	}
 
-	text.render("Videogames!!!", glm::vec2(10, 240 - 20), 12, glm::vec4(1, 1, 1, 1));
-
+	text.render("Vid!!!", glm::vec2(SCREEN_WIDTH / 2 - 170, SCREEN_HEIGHT / 2 + 10), 12, glm::vec4(0, 0, 1, 1));
 }
 
 void Scene::initShaders()
@@ -300,7 +297,6 @@ void Scene::reLoad(string level) {
 		harpoon = NULL;
 	}
 
-	// Despu�s de limpiar, puedes continuar reinicializando la escena
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
 
@@ -317,6 +313,7 @@ void Scene::reLoad(string level) {
 	// Si los niveles tienen diferente n�mero de pelotas, deber�as cargarlas seg�n la configuraci�n del nivel.
 	// Esto es un ejemplo para una sola pelota, pero podr�as tener una funci�n para cargar seg�n el nivel
 	balls.push_back(new Ball());
+
 	balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
 	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
 	balls.back()->setTileMap(map);
@@ -324,7 +321,8 @@ void Scene::reLoad(string level) {
 	// Reinicia las proyecciones y cualquier otro estado que necesites
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 
-	// Aseg�rate de reiniciar cualquier estado del juego como el tiempo, la puntuaci�n, las vidas, etc.
+
+
 	currentTime = 0.0f;
 	// Reinicia otras variables de estado si es necesario...
 

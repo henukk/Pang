@@ -83,9 +83,9 @@ void Scene::update(int deltaTime)
 	bool done = true;
 	for (auto& ball : balls) {
 		if (ball->getStatus()) {
-			ball->update(deltaTime);
 			done = false;
 		}
+		ball->update(deltaTime);
 	}
 	if (done) {
 		//code to end level

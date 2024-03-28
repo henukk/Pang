@@ -3,7 +3,7 @@
 #include <iostream>
 #include <GL/glew.h>
 
-#define bitsSize 0.0625
+#define bitsSize 0.03125
 
 void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL_COLOR color, BALL_SIZE size) {
 	this->color = color;
@@ -65,8 +65,39 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 0));
 
-		sprite->setAnimationSpeed(EXPLODING, 8);
-		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 0));
+		sprite->setAnimationSpeed(EXPLODING, 15);
+		switch (size)
+		{
+		case Ball::HUGE:
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 14, bitsSize * 0));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 20, bitsSize * 0));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 26, bitsSize * 0));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 24, bitsSize * 9));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 25, bitsSize * 25));
+			break;
+		case Ball::BIG:
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 13, bitsSize * 5));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 17, bitsSize * 5));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 21, bitsSize * 5));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 25, bitsSize * 5));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 25, bitsSize * 25));
+			break;
+		case Ball::MEDIUM:
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 13, bitsSize * 9));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 15, bitsSize * 9));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 17, bitsSize * 9));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 19, bitsSize * 9));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 25, bitsSize * 25));
+			break;
+		case Ball::SMALL:
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 21, bitsSize * 10));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 22, bitsSize * 10));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 23, bitsSize * 10));
+			sprite->addKeyframe(EXPLODING, glm::vec2(bitsSize * 25, bitsSize * 25));
+			break;
+		default:
+			break;
+		}
 		break;
 	case Ball::BLUE:
 		sprite->setAnimationSpeed(NORMAL, 8);
@@ -101,10 +132,15 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 }
 
 void Ball::update(int deltaTime) {
-	if (!status)
+	if (!status) {
+		if ((deadCounter < 4*5 && size != SMALL) || deadCounter < 4*4) {
+			sprite->update(deltaTime);
+		}
+		deadCounter++;
 		return;
-
+	}
 	sprite->update(deltaTime);
+
 
 	// X algo
 	posBall.x += velocityX;
@@ -219,4 +255,6 @@ bool Ball::getStatus() {
 
 void Ball::kill() {
 	status = false;
+	cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaa" << endl;
+	sprite->changeAnimation(EXPLODING);
 }

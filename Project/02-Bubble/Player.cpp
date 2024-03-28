@@ -12,7 +12,7 @@
 
 enum PlayerAnims
 {
-	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA
+	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA, DIE_RIGHT, DIE_LEFT
 };
 
 
@@ -49,6 +49,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->addKeyframe(PUJA, glm::vec2(0.1, 0.25f));
 		sprite->addKeyframe(PUJA, glm::vec2(0.2, 0.25f));
 		sprite->addKeyframe(PUJA, glm::vec2(0.3, 0.25f));
+	
 		
 		
 	sprite->changeAnimation(0);
@@ -164,6 +165,19 @@ void Player::setPosition(const glm::vec2 &pos)
 glm::ivec2 Player::getPosition()  {
 	return posPlayer;
 }
+
+glm::ivec2 Player::getSize() {
+	return glm::ivec2(32,32);
+}
+
+void Player::hit() {
+	// Cambia a la textura de la muerte y configura la animación de muerte
+	sprite->changeTexture(&spritesheetDeath);
+	sprite->changeAnimation(DIE_RIGHT); 
+	isDead = true;
+}
+
+
 
 
 

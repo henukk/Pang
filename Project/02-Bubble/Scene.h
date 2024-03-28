@@ -20,11 +20,16 @@ public:
     void render();
     void splitBall(int ballIndex);
 
+    bool checkCollision(Ball* ball, Player* player);
+    void reLoad(string level);
 private:
     void initShaders();
 
 
 private:
+    string currentLevel;
+    int score;
+    int lives;
     TileMap* map;
     Player* player;
     Harpoon* harpoon;

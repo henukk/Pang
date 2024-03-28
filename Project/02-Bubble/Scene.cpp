@@ -38,6 +38,7 @@ Scene::~Scene()
 
 void Scene::init(string level)
 {
+	currentLevel = level;
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
 
@@ -60,6 +61,8 @@ void Scene::init(string level)
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	currentTime = 0.0f;
+	lives = 3;
+	score = 0;
 }
 
 void Scene::update(int deltaTime)
@@ -90,6 +93,15 @@ void Scene::update(int deltaTime)
 	if (done) {
 		//code to end level
 		cout << "eiow" << endl;
+	}
+
+	for (auto& ball : balls) {
+		if (ball->getStatus() && checkCollision(ball, player)) {
+			--lives;
+			if(lives > 0)reLoad(currentLevel);
+			else Game::instance().changeState(GAME_MENU);
+			break;
+		}
 	}
 
 }
@@ -165,6 +177,7 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::BIG);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		score += 50;
 		break;
 	case Ball::BIG:
 		balls.push_back(new Ball());
@@ -177,6 +190,7 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::MEDIUM);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		score += 100;
 		break;
 	case Ball::MEDIUM:
 		balls.push_back(new Ball());
@@ -189,8 +203,10 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::SMALL);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
+		score += 150;
 		break;
 	case Ball::SMALL:
+		score += 200;
 	default:
 		break;
 	}
@@ -198,6 +214,75 @@ void Scene::splitBall(int ballIndex) {
 	hitBall->kill();
 }
 
+
+bool Scene::checkCollision(Ball* ball, Player* player) {
+	// Calcula los bordes del jugador y la pelota
+	glm::vec2 playerPos = player->getPosition();
+	glm::ivec2 playerSize = player->getSize();
+	glm::vec2 ballPos = ball->getPosition();
+	glm::ivec2 ballSize = ball->getSize();
+
+	// Comprueba si hay colisión (esto es una comprobación de AABB - Axis Aligned Bounding Box)
+	bool collisionX = playerPos.x + playerSize.x >= ballPos.x &&
+		ballPos.x + ballSize.x >= playerPos.x;
+	bool collisionY = playerPos.y + playerSize.y >= ballPos.y &&
+		ballPos.y + ballSize.y >= playerPos.y;
+
+	// Si hay colisión en ambas dimensiones, entonces hay una colisión
+	return collisionX && collisionY;
+}
+
+
+
+void Scene::reLoad(string level) {
+	// Primero, limpiar los recursos existentes
+	if (map != NULL) {
+		delete map;
+		map = NULL;
+	}
+	if (player != NULL) {
+		delete player;
+		player = NULL;
+	}
+	for (Ball* b : balls) {
+		if (b != NULL) {
+			delete b;
+		}
+	}
+	balls.clear();
+	if (harpoon != NULL) {
+		delete harpoon;
+		harpoon = NULL;
+	}
+
+	// Después de limpiar, puedes continuar reinicializando la escena
+	initShaders();
+	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
+
+	player = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_PLAYER_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
+	player->setTileMap(map);
+
+	harpoon = new Harpoon();
+	harpoon->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
+	harpoon->setTileMap(map);
+
+	// Si los niveles tienen diferente número de pelotas, deberías cargarlas según la configuración del nivel.
+	// Esto es un ejemplo para una sola pelota, pero podrías tener una función para cargar según el nivel
+	balls.push_back(new Ball());
+	balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
+	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
+	balls.back()->setTileMap(map);
+
+	// Reinicia las proyecciones y cualquier otro estado que necesites
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
+
+	// Asegúrate de reiniciar cualquier estado del juego como el tiempo, la puntuación, las vidas, etc.
+	currentTime = 0.0f;
+	// Reinicia otras variables de estado si es necesario...
+}
 
 
 

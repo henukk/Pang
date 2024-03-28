@@ -24,12 +24,17 @@ public:
 	void setPosition(const glm::vec2 &pos);
 	void shootHarpoon();
 	glm::ivec2 getPosition();
+
+	glm::ivec2 getSize();
+
+	void hit();
 	
 private:
+	bool isDead;
 	bool bStairs;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY;
-	Texture spritesheet;
+	Texture spritesheet, spritesheetDeath;
 	Sprite *sprite;
 	TileMap *map;
 	vector<Harpoon*> harpoons;

@@ -16,7 +16,6 @@ void Game::init() {
 bool Game::update(int deltaTime) {
     switch (state) {
     case GAME_MENU:
-        menu.update(deltaTime);
         break;
     case GAME_PLAYING:
         scene.update(deltaTime);
@@ -93,4 +92,10 @@ void Game::mouseRelease(int button)
 bool Game::getKey(int key) const
 {
     return keys[key];
+}
+
+void Game::changeState(GameState newState) {
+    state = newState;
+    // Aquí podrías hacer otras operaciones necesarias cuando cambias de estado,
+    // como pausar la música, cambiar las visualizaciones, etc.
 }

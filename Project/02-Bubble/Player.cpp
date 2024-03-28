@@ -184,7 +184,7 @@ glm::ivec2 Player::getPosition()  {
 }
 
 glm::ivec2 Player::getSize() {
-	return glm::ivec2(32,32);
+	return glm::ivec2(16,32);
 }
 
 void Player::hit() {

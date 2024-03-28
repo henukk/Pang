@@ -361,12 +361,12 @@ bool TileMap::collisionMoveUpPlayer(const glm::ivec2& pos, const glm::ivec2& siz
 	x1 = (pos.x + size.x - 1) / tileSize;
 
 	// Calcula la posici�n del tile justo arriba del objeto
-	y = pos.y / tileSize; // Restamos 1 para obtener el tile encima del objeto
+	y = pos.y / tileSize; 
 
 	// Itera sobre los tiles en el rango horizontal del objeto
 	for (int x = x0; x <= x1; x++)
 	{
-		// Verifica si el tile actual es s�lido. Tambi�n comprueba que 'y' no es negativo para evitar �ndices fuera de rango.
+		
 		int tileType = map[y * mapSize.x + x];
 		if (y >= 0 && tileType != 0 && tileType != 13 && tileType != 11 && tileType != 12 &&
 			tileType != 45 && tileType != 43 && tileType != 44)

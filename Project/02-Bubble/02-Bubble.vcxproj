@@ -79,7 +79,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\libs\freetype-2.3.5-1-bin\include;..\libs\irrKlang-1.6.0\include;..\libs\freetype-2.3.5-1-bin\include\freetype2;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

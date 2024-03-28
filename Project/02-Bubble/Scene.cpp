@@ -48,6 +48,14 @@ Scene::~Scene()
 
 void Scene::init(string level)
 {
+
+	map = NULL;
+	player = NULL;
+	balls.clear();
+	foods.clear();
+	comboCounter = 0;
+	lastBallSizeDestoyed = Ball::NONE;
+	std::srand(std::time(nullptr));
 	std::srand(std::time(nullptr));
 
 	currentLevel = level;
@@ -315,8 +323,6 @@ void Scene::reLoad(string level) {
 		delete harpoon;
 		harpoon = NULL;
 	}
-
-	// Despu�s de limpiar, puedes continuar reinicializando la escena
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
 
@@ -330,8 +336,6 @@ void Scene::reLoad(string level) {
 	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
 	harpoon->setTileMap(map);
 
-	// Si los niveles tienen diferente n�mero de pelotas, deber�as cargarlas seg�n la configuraci�n del nivel.
-	// Esto es un ejemplo para una sola pelota, pero podr�as tener una funci�n para cargar seg�n el nivel
 	balls.push_back(new Ball());
 	balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
 	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));

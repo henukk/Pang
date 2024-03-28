@@ -10,6 +10,8 @@
 #include "Harpoon.h"
 #include "Food.h"
 #include "PlayerInterface.h"
+#include "SoundManager.h"
+#include "Text.h"
 
 class Scene
 {
@@ -45,6 +47,8 @@ private:
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
+    SoundManager sound;
+    Text text;
 };
 
 #endif // _SCENE_INCLUDE

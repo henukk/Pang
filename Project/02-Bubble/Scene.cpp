@@ -16,6 +16,7 @@
 #define INIT_BALL_Y_TILES 2
 
 
+
 Scene::Scene()
 {
 	map = NULL;
@@ -45,6 +46,9 @@ Scene::~Scene()
 
 void Scene::init(string level)
 {
+
+
+	
 	currentLevel = level;
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
@@ -70,6 +74,10 @@ void Scene::init(string level)
 	score = 0;
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
+	if (!text.init("fonts/OpenSans-Regular.ttf"))
+		//if(!text.init("fonts/OpenSans-Bold.ttf"))
+		//if(!text.init("fonts/DroidSerif.ttf"))
+		cout << "Could not load font!!!" << endl;
 }
 
 void Scene::update(int deltaTime)
@@ -98,7 +106,6 @@ void Scene::update(int deltaTime)
 		ball->update(deltaTime);
 	}
 	if (done) {
-		//code to end level
 		cout << "eiow" << endl;
 	}
 
@@ -141,6 +148,8 @@ void Scene::render()
 		food->render();
 	}
 
+	text.render("Videogames!!!", glm::vec2(10, 240 - 20), 12, glm::vec4(1, 1, 1, 1));
+
 }
 
 void Scene::initShaders()
@@ -174,7 +183,7 @@ void Scene::initShaders()
 }
 
 void Scene::splitBall(int ballIndex) {
-	// Aquí necesitas el índice de la pelota en el vector para dividirla
+	// Aquï¿½ necesitas el ï¿½ndice de la pelota en el vector para dividirla
 	Ball* hitBall = balls[ballIndex];
 	glm::vec2 pos = hitBall->getPosition();
 	glm::ivec2 size = hitBall->getSize();
@@ -252,13 +261,13 @@ bool Scene::checkCollision(Ball* ball, Player* player) {
 	glm::vec2 ballPos = ball->getPosition();
 	glm::ivec2 ballSize = ball->getSize();
 
-	// Comprueba si hay colisión (esto es una comprobación de AABB - Axis Aligned Bounding Box)
+	// Comprueba si hay colisiï¿½n (esto es una comprobaciï¿½n de AABB - Axis Aligned Bounding Box)
 	bool collisionX = playerPos.x + playerSize.x >= ballPos.x &&
 		ballPos.x + ballSize.x >= playerPos.x;
 	bool collisionY = playerPos.y + playerSize.y >= ballPos.y &&
 		ballPos.y + ballSize.y >= playerPos.y;
 
-	// Si hay colisión en ambas dimensiones, entonces hay una colisión
+	// Si hay colisiï¿½n en ambas dimensiones, entonces hay una colisiï¿½n
 	return collisionX && collisionY;
 }
 
@@ -291,7 +300,7 @@ void Scene::reLoad(string level) {
 		harpoon = NULL;
 	}
 
-	// Después de limpiar, puedes continuar reinicializando la escena
+	// Despuï¿½s de limpiar, puedes continuar reinicializando la escena
 	initShaders();
 	map = TileMap::createTileMap(level, glm::vec2(0, 0), texProgram);
 
@@ -305,8 +314,8 @@ void Scene::reLoad(string level) {
 	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
 	harpoon->setTileMap(map);
 
-	// Si los niveles tienen diferente número de pelotas, deberías cargarlas según la configuración del nivel.
-	// Esto es un ejemplo para una sola pelota, pero podrías tener una función para cargar según el nivel
+	// Si los niveles tienen diferente nï¿½mero de pelotas, deberï¿½as cargarlas segï¿½n la configuraciï¿½n del nivel.
+	// Esto es un ejemplo para una sola pelota, pero podrï¿½as tener una funciï¿½n para cargar segï¿½n el nivel
 	balls.push_back(new Ball());
 	balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
 	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
@@ -315,7 +324,7 @@ void Scene::reLoad(string level) {
 	// Reinicia las proyecciones y cualquier otro estado que necesites
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 
-	// Asegúrate de reiniciar cualquier estado del juego como el tiempo, la puntuación, las vidas, etc.
+	// Asegï¿½rate de reiniciar cualquier estado del juego como el tiempo, la puntuaciï¿½n, las vidas, etc.
 	currentTime = 0.0f;
 	// Reinicia otras variables de estado si es necesario...
 

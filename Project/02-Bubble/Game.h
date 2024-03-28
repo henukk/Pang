@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include "Scene.h"
 #include "Menu.h"
+#include "InitScreen.h"
+#include "Instructions.h"
 
 #define SCREEN_WIDTH (48*8)
 #define SCREEN_HEIGHT (30*8)
@@ -12,8 +14,11 @@
 
 // Game is a singleton (a class with a single instance) that represents our whole application
 enum GameState {
+	GAME_INIT,
 	GAME_MENU,
-	GAME_PLAYING
+	GAME_INSTRUCTIONS,
+	GAME_PLAYING, 
+	CREDITS
 };
 
 
@@ -46,6 +51,8 @@ public:
 
 	void changeState(GameState newState);
 
+	void levelPassed();
+
 private:
 	bool bPlay; // Continue to play game?
 	bool keys[GLFW_KEY_LAST+1]; // Store key states so that 
@@ -54,7 +61,9 @@ private:
 	GameState state;
 	Menu menu;
 	string level;
-
+	InitScreen initScreen;
+	Instructions instructions;
+	int levelspassed;
 };
 
 #endif // _GAME_INCLUDE

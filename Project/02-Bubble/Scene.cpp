@@ -75,11 +75,7 @@ void Scene::init(string level)
 	score = 0;
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
-	if (!text.init("fonts/OpenSans-Regular.ttf"))
-		//if(!text.init("fonts/OpenSans-Bold.ttf"))
-		//if(!text.init("fonts/DroidSerif.ttf"))
-		cout << "Could not load font!!!" << endl;
-
+	
 
 	sound.playBGM("music/04. Stage 01 (Hong Kong).mp3", true);
 }
@@ -158,8 +154,6 @@ void Scene::render()
 	for (auto food : foods) {
 		food->render();
 	}
-
-	text.render("Videogames!!!", glm::vec2(0, 0), 12, glm::vec4(1, 1, 1, 1));
 
 }
 

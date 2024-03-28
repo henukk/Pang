@@ -48,7 +48,7 @@ private:
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
     SoundManager sound;
-    Text text;
+
 };
 
 #endif // _SCENE_INCLUDE

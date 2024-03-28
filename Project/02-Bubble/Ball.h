@@ -12,7 +12,7 @@ public:
         RED, BLUE, GREEN
     };
     enum BALL_SIZE {
-        HUGE, BIG, MEDIUM, SMALL
+        HUGE, BIG, MEDIUM, SMALL, NONE
     };
 
     enum BALL_STATUS {

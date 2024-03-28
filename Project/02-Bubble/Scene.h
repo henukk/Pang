@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Harpoon.h"
+#include "Food.h"
+#include "PlayerInterface.h"
 #include "SoundManager.h"
 #include "Text.h"
 
@@ -29,6 +31,8 @@ private:
 
 
 private:
+    PlayerInterface* playerInterface;
+
     string currentLevel;
     int score;
     int lives;
@@ -39,6 +43,10 @@ private:
     float currentTime;
     glm::mat4 projection;
     std::vector<Ball*> balls;
+    std::vector<Food*> foods;
+
+    Ball::BALL_SIZE lastBallSizeDestoyed;
+    int comboCounter;
     SoundManager sound;
     Text text;
 };

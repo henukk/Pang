@@ -19,7 +19,6 @@ FT_Library Text::library;
 Text::Text()
 {
 	quad = NULL;
-	textureSize = 1;
 }
 
 Text::~Text()

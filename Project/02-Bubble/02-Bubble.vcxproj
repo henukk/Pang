@@ -20,7 +20,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerInterface.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Score.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="SoundManager.h" />
@@ -39,7 +38,6 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerInterface.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Score.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -81,7 +79,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <ExternalIncludePath>..\libs\freetype-2.3.5-1-bin\include\freetype2;..\libs\irrKlang-1.6.0\include;..\libs\freetype-2.3.5-1-bin\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

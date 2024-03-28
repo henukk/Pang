@@ -10,7 +10,6 @@ void Game::init() {
     state = GAME_MENU; // Iniciar en el menú
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     menu.init();
-
     
 }
 

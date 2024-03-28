@@ -376,7 +376,6 @@ bool TileMap::collisionMoveUpPlayer(const glm::ivec2& pos, const glm::ivec2& siz
 	return false; // No hay colisi�n
 }
 
-
 bool TileMap::collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& size) const
 {
 	int x0, x1, y;
@@ -401,8 +400,6 @@ bool TileMap::collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& s
 
 	return false; // No hay colisi�n
 }
-
-
 
 void TileMap::getRightTile(const glm::ivec2& pos, const glm::ivec2& size) {
 

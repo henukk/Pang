@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <GL/glew.h>
+#include "Game.h"
 
 #define bitsSize 0.03125
 
@@ -220,14 +221,19 @@ glm::vec2 Ball::getPosition()
 
 
 bool Ball::isHitByHarpoon(Harpoon& harpoon) {
-	// Asumiendo que tienes métodos para obtener la posición y el tamaño del sprite del arpón
 	glm::vec2 harpoonPos = harpoon.getPosition();
-	int harpoonSize = harpoon.getSize();
+	glm::ivec2 screenSize = glm::ivec2(48*8,30 * 8 ); // Assuming you have a method to get the screen size
 
-	// Comprobar si las cajas de colisión se solapan
-	return !(posBall.x + boxSize.x < harpoonPos.x || posBall.x > harpoonPos.x + 8 ||
-		posBall.y + boxSize.y < harpoonPos.y || posBall.y > harpoonPos.y + harpoonSize);
+	// Assuming harpoon width is negligible, check if the ball's X position intersects the harpoon's X position
+	bool intersectsInX = posBall.x < harpoonPos.x && posBall.x + boxSize.x > harpoonPos.x;
+
+	// Check if the ball is below the top of the harpoon (which we assume extends to the top of the screen)
+	bool intersectsInY = posBall.y < screenSize.y && posBall.y + boxSize.y > harpoonPos.y;
+
+	// If both X and Y intersect, the ball is hit by the harpoon
+	return intersectsInX && intersectsInY;
 }
+
 
 glm::vec2 Ball::getSize()
 {

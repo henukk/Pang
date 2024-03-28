@@ -39,6 +39,8 @@ private:
 	TileMap *map;
 	vector<Harpoon*> harpoons;
 	ShaderProgram texProgram;
+	float deathAnimationTime;
+
 
 };
 

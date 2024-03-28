@@ -19,13 +19,14 @@ public:
     Scene();
     ~Scene();
 
-    void init(string level);
+    void init(string level, const char* song);
     void update(int deltaTime);
     void render();
     void splitBall(int ballIndex);
 
     bool checkCollision(Ball* ball, Player* player);
     void reLoad(string level);
+    void stopSong();
 private:
     void initShaders();
 

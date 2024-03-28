@@ -11,6 +11,8 @@ class Menu {
         void render();
 
         void initShaders();
+
+        void stopSong();
    
 
 

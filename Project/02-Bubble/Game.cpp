@@ -4,7 +4,6 @@
 
 
 void Game::init() {
-    levelspassed = 0;
     bPlay = true;
     state = GAME_INIT; // Iniciar en el menú
     glClearColor(0.0667f, 0.0667f, 0.0667f, 1.0f);
@@ -64,15 +63,21 @@ void Game::keyPressed(int key) {
         switch (key){
             case GLFW_KEY_1:                
                 state = GAME_PLAYING;
-                scene.init("levels/stage1-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage1-1.txt", "music/04. Stage 01 (Hong Kong).mp3");
+                currentLevel = 1;
                 break;
             case GLFW_KEY_2:               
                 state = GAME_PLAYING;
-                scene.init("levels/stage2-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage2-1.txt", "music/05. Stage 02-04 (Java).mp3");
+                currentLevel = 2;
                 break;
             case GLFW_KEY_3:
                 state = GAME_PLAYING;
-                scene.init("levels/stage2-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage2-1.txt", "music/06. Stage 05-07 (Silk Road (Xi'an)).mp3");
+                currentLevel = 3;
                 break;
         }
 
@@ -81,6 +86,8 @@ void Game::keyPressed(int key) {
         // Salir del juego o volver al menú
         if (state == GAME_PLAYING) {
             state = GAME_MENU;
+            scene.stopSong();
+            menu.init();
         }else if (state == GAME_INSTRUCTIONS) {
             state = GAME_MENU;
 
@@ -119,6 +126,4 @@ void Game::changeState(GameState newState) {
     state = newState;
 }
 
-void Game::levelPassed() {
-    ++levelspassed;
-}
+

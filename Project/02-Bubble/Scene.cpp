@@ -21,6 +21,9 @@ Scene::Scene()
 	map = NULL;
 	player = NULL;
 	balls.clear();
+	foods.clear();
+	comboCounter = 0;
+	lastBallSizeDestoyed = Ball::NONE;
 }
 
 Scene::~Scene()
@@ -32,6 +35,10 @@ Scene::~Scene()
 	for (Ball* b : balls) {
 		if (b != NULL)
 			delete b;
+	}
+	for (Food* f : foods) {
+		if (f != NULL)
+			delete f;
 	}
 }
 
@@ -47,7 +54,6 @@ void Scene::init(string level)
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * (SCREEN_WIDTH/SCREEN_X), INIT_PLAYER_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
 	player->setTileMap(map);
 
-
 	harpoon = new Harpoon();
 	harpoon->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
@@ -58,11 +64,12 @@ void Scene::init(string level)
 	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
 	balls.back()->setTileMap(map);
 
-
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	currentTime = 0.0f;
 	lives = 3;
 	score = 0;
+	comboCounter = 0;
+	lastBallSizeDestoyed = Ball::NONE;
 }
 
 void Scene::update(int deltaTime)
@@ -105,6 +112,12 @@ void Scene::update(int deltaTime)
 		}
 	}
 
+	for (auto& food : foods) {
+		if (food->isAlive()) {
+			food->update(deltaTime);
+		}
+	}
+
 }
 
 void Scene::render()
@@ -124,6 +137,9 @@ void Scene::render()
 	for (auto ball : balls) {
         ball->render();
     }
+	for (auto food : foods) {
+		food->render();
+	}
 
 }
 
@@ -166,6 +182,19 @@ void Scene::splitBall(int ballIndex) {
 	Ball::BALL_SIZE type = hitBall->getType();
 	int direction = hitBall->getDirection();
 
+	if (lastBallSizeDestoyed == type) {
+		comboCounter *= 2;
+		if (comboCounter > 8)
+			comboCounter = 8;
+	}
+	else comboCounter = 1;
+	lastBallSizeDestoyed = type;
+
+	static int eiow = 0;
+	foods.push_back(new Food());
+	foods.back()->init(eiow++, &score, pos, texProgram);
+	foods.back()->setTileMap(map);
+
 	switch (type) {
 	case Ball::HUGE:
 		balls.push_back(new Ball());
@@ -178,7 +207,7 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::BIG);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
-		score += 50;
+		score += 50 * comboCounter;
 		break;
 	case Ball::BIG:
 		balls.push_back(new Ball());
@@ -191,7 +220,7 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::MEDIUM);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
-		score += 100;
+		score += 100 * comboCounter;
 		break;
 	case Ball::MEDIUM:
 		balls.push_back(new Ball());
@@ -204,10 +233,10 @@ void Scene::splitBall(int ballIndex) {
 		balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, color, Ball::SMALL);
 		balls.back()->setPosition(glm::vec2(glm::vec2(pos.x + size.x / 2, pos.y)));
 		balls.back()->setTileMap(map);
-		score += 150;
+		score += 150 * comboCounter;
 		break;
 	case Ball::SMALL:
-		score += 200;
+		score += 200 * comboCounter;
 	default:
 		break;
 	}
@@ -251,6 +280,12 @@ void Scene::reLoad(string level) {
 		}
 	}
 	balls.clear();
+	for (Food* f : foods) {
+		if (f != NULL) {
+			delete f;
+		}
+	}
+
 	if (harpoon != NULL) {
 		delete harpoon;
 		harpoon = NULL;
@@ -283,6 +318,11 @@ void Scene::reLoad(string level) {
 	// Asegúrate de reiniciar cualquier estado del juego como el tiempo, la puntuación, las vidas, etc.
 	currentTime = 0.0f;
 	// Reinicia otras variables de estado si es necesario...
+
+	lives = 3;
+	score = 0;
+	comboCounter = 0;
+	lastBallSizeDestoyed = Ball::NONE;
 }
 
 

@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Harpoon.h"
+#include "Food.h"
+#include "PlayerInterface.h"
 
 class Scene
 {
@@ -27,6 +29,8 @@ private:
 
 
 private:
+    PlayerInterface* playerInterface;
+
     string currentLevel;
     int score;
     int lives;
@@ -37,6 +41,10 @@ private:
     float currentTime;
     glm::mat4 projection;
     std::vector<Ball*> balls;
+    std::vector<Food*> foods;
+
+    Ball::BALL_SIZE lastBallSizeDestoyed;
+    int comboCounter;
 };
 
 #endif // _SCENE_INCLUDE

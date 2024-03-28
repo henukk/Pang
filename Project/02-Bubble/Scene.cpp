@@ -79,6 +79,9 @@ void Scene::init(string level)
 		//if(!text.init("fonts/OpenSans-Bold.ttf"))
 		//if(!text.init("fonts/DroidSerif.ttf"))
 		cout << "Could not load font!!!" << endl;
+
+
+	sound.playBGM("music/04. Stage 01 (Hong Kong).mp3", true);
 }
 
 void Scene::update(int deltaTime)
@@ -94,6 +97,7 @@ void Scene::update(int deltaTime)
 		harpoon->setPosition(player->getPosition());
 	for (int i = 0; i < balls.size(); ++i) {
 		if (harpoon->shooting() && balls[i]->getStatus() && balls[i]->isHitByHarpoon(*harpoon)) {
+			//sound.playBGM("music/10 - Balloon Burst.mp3", true);
 			splitBall(i);
 			harpoon->kill();
 			break;

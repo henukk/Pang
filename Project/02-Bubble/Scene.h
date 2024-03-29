@@ -12,6 +12,7 @@
 #include "PlayerInterface.h"
 #include "SoundManager.h"
 #include "Text.h"
+#include "PowerUp.h"
 
 class Scene
 {
@@ -45,10 +46,14 @@ private:
     glm::mat4 projection;
     std::vector<Ball*> balls;
     std::vector<Food*> foods;
+    std::vector<PowerUp*> powerUp;
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
     SoundManager *sound;
+
+    bool invencible;
+
 
 };
 

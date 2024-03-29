@@ -24,6 +24,7 @@ Scene::Scene()
 	player = NULL;
 	balls.clear();
 	foods.clear();
+	powerUp.clear();
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
 	std::srand(std::time(nullptr));
@@ -35,6 +36,7 @@ Scene::~Scene()
 		delete map;
 	if(player != NULL)
 		delete player;
+
 	for (Ball* b : balls) {
 		if (b != NULL)
 			delete b;
@@ -43,17 +45,26 @@ Scene::~Scene()
 		if (f != NULL)
 			delete f;
 	}
+
+	for (PowerUp* f : powerUp) {
+		if (f != NULL)
+			delete f;
+	}
+
 }
 
 
 void Scene::init(string level,const char* song, SoundManager* soundM)
 {
+	invencible = false;
 	sound = soundM;
 	map = NULL;
 	player = NULL;
 	balls.clear();
 	foods.clear();
+	powerUp.clear();
 	comboCounter = 0;
+
 	lastBallSizeDestoyed = Ball::NONE;
 	std::srand(std::time(nullptr));
 	std::srand(std::time(nullptr));
@@ -115,15 +126,17 @@ void Scene::update(int deltaTime)
 		ball->update(deltaTime);
 	}
 	if (done) {
-		cout << "eiow" << endl;
 	}
 
 	for (auto& ball : balls) {
 		if (ball->getStatus() && checkCollision(ball, player)) {
 			player->hit();
-			--lives;
-			if(lives > 0)reLoad(currentLevel);
-			else Game::instance().changeState(GAME_MENU);
+			if (!invencible) {
+				--lives;
+				if (lives > 0)reLoad(currentLevel);
+				else Game::instance().changeState(GAME_MENU);
+			}
+			else invencible = false;
 			break;
 		}
 	}
@@ -141,7 +154,19 @@ void Scene::update(int deltaTime)
 		}
 	}
 
-}
+
+	for (auto& powerup : powerUp) {
+		if (powerup->isAlive()) {
+			powerup->update(deltaTime);
+			int points = powerup->checkCollider(player->getPosition(), player->getSize());
+			invencible = powerup->isTypeInvencible();				
+			powerup->kill();
+			}
+
+		}
+	}
+
+
 
 void Scene::render()
 {
@@ -162,6 +187,9 @@ void Scene::render()
     }
 	for (auto food : foods) {
 		food->render();
+	}
+	for (auto powerup : powerUp) {
+		powerup->render();
 	}
 
 }
@@ -214,6 +242,14 @@ void Scene::splitBall(int ballIndex) {
 	lastBallSizeDestoyed = type;
 
 	//food generator
+	int foodPos = 8 + rand() % (360 - 8 + 1);
+	static int eiow = 0;
+	foods.push_back(new Food());
+	foods.back()->init(eiow++, glm::vec2(foodPos, 8), texProgram);
+	foods.back()->setTileMap(map);
+
+
+	// powerUp generator
 	int foodPos = 8 + rand() % (360 - 8 + 1);
 	static int eiow = 0;
 	foods.push_back(new Food());
@@ -318,6 +354,14 @@ void Scene::reLoad(string level) {
 			delete f;
 		}
 	}
+
+	for (PowerUp* f : powerUp) {
+		if (f != NULL) {
+			delete f;
+		}
+	}
+
+
 	foods.clear();
 
 	if (harpoon != NULL) {

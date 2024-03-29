@@ -10,12 +10,14 @@
 #define SCREEN_HEIGHT (30*8)
 
 
-void Menu::init()
+void Menu::init(SoundManager * soundM)
 {
+	sound = soundM;
 	initShaders();
 	map = TileMap::createTileMap("levels/menu.txt", glm::vec2(0, 0), texProgram);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
-	/*sound.playBGM("music/title.mp3", true);*/
+	sound->stopBGM();
+	sound->playBGM("music/03. Mode Select.mp3", true);
 }
 
 
@@ -63,4 +65,8 @@ void Menu::initShaders()
 	texProgram.bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
+}
+
+void Menu::stopSong() {
+	sound->stopAllSounds();
 }

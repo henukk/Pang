@@ -7,10 +7,12 @@ class Menu {
     public:
     
 
-        void init();
+        void init(SoundManager* soundM);
         void render();
 
         void initShaders();
+
+        void stopSong();
    
 
 
@@ -19,6 +21,6 @@ class Menu {
         ShaderProgram texProgram;
         TileMap* map;
         glm::mat4 projection;
-        SoundManager sound;
+        SoundManager* sound;
 
 };

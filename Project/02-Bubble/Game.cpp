@@ -4,11 +4,12 @@
 
 
 void Game::init() {
-    levelspassed = 0;
     bPlay = true;
     state = GAME_INIT; // Iniciar en el menú
     glClearColor(0.0667f, 0.0667f, 0.0667f, 1.0f);
     initScreen.init();
+    SoundManager* sound = new SoundManager();
+
     
 }
 
@@ -50,7 +51,7 @@ void Game::render() {
 void Game::keyPressed(int key) {
     if (state == GAME_INIT && key == GLFW_KEY_ENTER) {
         state = GAME_MENU;
-        menu.init();
+        menu.init(&sound);
     }
     else if (key == GLFW_KEY_I) {
         state = GAME_INSTRUCTIONS;
@@ -58,21 +59,27 @@ void Game::keyPressed(int key) {
     }
     else if (key == GLFW_KEY_6) {
         state = GAME_MENU;
-        menu.init();
+        menu.init(&sound);
     }
     else if (state == GAME_MENU) {
         switch (key){
             case GLFW_KEY_1:                
                 state = GAME_PLAYING;
-                scene.init("levels/stage1-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage1-1.txt", "music/04. Stage 01 (Hong Kong).mp3", &sound);
+                currentLevel = 1;
                 break;
             case GLFW_KEY_2:               
                 state = GAME_PLAYING;
-                scene.init("levels/stage2-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage2-1.txt", "music/05. Stage 02-04 (Java).mp3", &sound);
+                currentLevel = 2;
                 break;
             case GLFW_KEY_3:
                 state = GAME_PLAYING;
-                scene.init("levels/stage2-1.txt");
+                menu.stopSong();
+                scene.init("levels/stage2-1.txt", "music/06. Stage 05-07 (Silk Road (Xi'an)).mp3", &sound);
+                currentLevel = 3;
                 break;
         }
 
@@ -81,13 +88,16 @@ void Game::keyPressed(int key) {
         // Salir del juego o volver al menú
         if (state == GAME_PLAYING) {
             state = GAME_MENU;
+            sound.stopAllSounds();
+            menu.init(&sound);
+            
         }else if (state == GAME_INSTRUCTIONS) {
             state = GAME_MENU;
-
         }
         else {
             bPlay = false;
         }
+        
     }
 
 
@@ -119,6 +129,4 @@ void Game::changeState(GameState newState) {
     state = newState;
 }
 
-void Game::levelPassed() {
-    ++levelspassed;
-}
+

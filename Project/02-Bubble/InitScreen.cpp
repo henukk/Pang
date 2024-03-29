@@ -15,7 +15,8 @@ void InitScreen::init()
 	initShaders();
 	map = TileMap::createTileMap("levels/iniScreen.txt", glm::vec2(0, 0), texProgram);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
-	/*sound.playBGM("music/title.mp3", true);*/
+	sound.playBGM("music/01. Credit (W-JP Version).mp3", false);
+
 }
 
 

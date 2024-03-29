@@ -19,13 +19,14 @@ public:
     Scene();
     ~Scene();
 
-    void init(string level);
+    void init(string level, const char* song, SoundManager* soundM);
     void update(int deltaTime);
     void render();
     void splitBall(int ballIndex);
 
     bool checkCollision(Ball* ball, Player* player);
     void reLoad(string level);
+    void stopSong();
 private:
     void initShaders();
 
@@ -47,7 +48,7 @@ private:
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
-    SoundManager sound;
+    SoundManager *sound;
 
 };
 

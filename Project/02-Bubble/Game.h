@@ -51,7 +51,7 @@ public:
 
 	void changeState(GameState newState);
 
-	void levelPassed();
+
 
 private:
 	bool bPlay; // Continue to play game?
@@ -63,7 +63,8 @@ private:
 	string level;
 	InitScreen initScreen;
 	Instructions instructions;
-	int levelspassed;
+	int currentLevel;
+	SoundManager sound;
 };
 
 #endif // _GAME_INCLUDE

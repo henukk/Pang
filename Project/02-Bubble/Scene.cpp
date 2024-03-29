@@ -46,9 +46,9 @@ Scene::~Scene()
 }
 
 
-void Scene::init(string level)
+void Scene::init(string level,const char* song, SoundManager* soundM)
 {
-
+	sound = soundM;
 	map = NULL;
 	player = NULL;
 	balls.clear();
@@ -84,8 +84,8 @@ void Scene::init(string level)
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
 	
-
-	sound.playBGM("music/04. Stage 01 (Hong Kong).mp3", true);
+	sound->stopAllSounds();
+	sound->playBGM(song, true);
 }
 
 void Scene::update(int deltaTime)
@@ -101,7 +101,7 @@ void Scene::update(int deltaTime)
 		harpoon->setPosition(player->getPosition());
 	for (int i = 0; i < balls.size(); ++i) {
 		if (harpoon->shooting() && balls[i]->getStatus() && balls[i]->isHitByHarpoon(*harpoon)) {
-			//sound.playBGM("music/10 - Balloon Burst.mp3", true);
+			sound->playBGM("music/10 - Balloon Burst.mp3", false);
 			splitBall(i);
 			harpoon->kill();
 			break;
@@ -134,6 +134,7 @@ void Scene::update(int deltaTime)
 			int points = food->checkCollider(player->getPosition(), player->getSize());
 			if (points > 0) {
 				score += points;
+				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
 				food->kill();
 			}
 
@@ -353,6 +354,12 @@ void Scene::reLoad(string level) {
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
 }
+
+
+void Scene::stopSong() {
+	sound->stopBGM();
+}
+
 
 
 

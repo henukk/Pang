@@ -19,7 +19,7 @@ public:
     Scene();
     ~Scene();
 
-    void init(string level, const char* song);
+    void init(string level, const char* song, SoundManager* soundM);
     void update(int deltaTime);
     void render();
     void splitBall(int ballIndex);
@@ -48,7 +48,7 @@ private:
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
-    SoundManager sound;
+    SoundManager *sound;
 
 };
 

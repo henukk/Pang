@@ -115,8 +115,17 @@ void Player::update(int deltaTime)
 		}
 	}
 	
-	
-	else if(Game::instance().getKey(GLFW_KEY_LEFT) )
+	if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs) {
+		posPlayer.y += 2;
+		//sprite->changeAnimation(STAY);
+
+		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
+		{
+			posPlayer.y -= 2;
+			//sprite->changeAnimation(STAY);
+		}
+	}
+	if(Game::instance().getKey(GLFW_KEY_LEFT) )
 	{
 		if(sprite->animation() != MOVE_LEFT)
 			sprite->changeAnimation(MOVE_LEFT);
@@ -126,10 +135,9 @@ void Player::update(int deltaTime)
 			posPlayer.x += 2;
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_RIGHT) )
+	else if(Game::instance().getKey(GLFW_KEY_RIGHT))
 	{
 
-		
 		if(sprite->animation() != MOVE_RIGHT)
 			sprite->changeAnimation(MOVE_RIGHT);
 		posPlayer.x += 2;
@@ -168,16 +176,7 @@ void Player::update(int deltaTime)
 		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		sprite->changeAnimation(DISPARA);
 		
-	} else if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs) {
-		posPlayer.y += 2;
-		sprite->changeAnimation(STAY);
-
-		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)))
-		{
-			posPlayer.y -= 2;
-			sprite->changeAnimation(STAY);
-		}
-	}
+	} 
 	
 	else sprite->changeAnimation(STAY);
 

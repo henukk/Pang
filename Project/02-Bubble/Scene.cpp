@@ -88,6 +88,7 @@ void Scene::init(string level,const char* song, SoundManager* soundM)
 	harpoon->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), 0));
 	harpoon->setTileMap(map);
 
+
 	balls.push_back(new Ball());
 	balls.back()->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, Ball::RED, Ball::HUGE);
 	balls.back()->setPosition(glm::vec2(INIT_BALL_X_TILES * (SCREEN_WIDTH / SCREEN_X), INIT_BALL_Y_TILES * (SCREEN_HEIGHT / SCREEN_Y)));
@@ -113,10 +114,15 @@ void Scene::init(string level,const char* song, SoundManager* soundM)
 	invencibleCycles = 0;
 	dinamite = false;
 	dinamiteCycles = 0;
+
+	startTimer(120.0f);
 }
 
 void Scene::update(int deltaTime)
 {
+
+	updateTimer(deltaTime);
+
 	if (Game::instance().getKey(GLFW_KEY_A)) { //stop watch¡
 		playerInterface->setItem(Item::STOP_WATCH);
 		stopWatchCycles = STOP_WATCH_CYCLES;
@@ -531,6 +537,25 @@ void Scene::stopSong() {
 	sound->stopBGM();
 }
 
+
+void Scene::updateTimer(int deltaTime) {
+	if (timerActive) {
+		timer += deltaTime / 1000.0f; // Convertir de milisegundos a segundos si es necesario.
+		if (timer >= timerDuration) {
+			timerActive = false;
+			timer = timerDuration;
+			// Aquí se coloca el código que se ejecuta cuando el temporizador llega a cero.
+		}
+	}
+
+	playerInterface->setTime(timerDuration -timer);
+}
+
+void Scene::startTimer(float duration) {
+	timerDuration = duration;
+	timer = 0;
+	timerActive = true;
+}
 
 
 

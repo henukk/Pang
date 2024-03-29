@@ -36,8 +36,6 @@ void PlayerInterface::init(ShaderProgram& program) {
 
 void PlayerInterface::update(int deltaTime) {
 
-	time = MIN_GAME - deltaTime-last_time;
-	last_time = deltaTime;
 
 }
 void PlayerInterface::render() {
@@ -96,7 +94,7 @@ void PlayerInterface::render() {
 	glDisable(GL_TEXTURE_2D);
 
 	text2.render("SCORE:"+ to_string(score), glm::vec2(500, 900), 40, glm::vec4(1, 1, 1, 1));
-	text2.render("TIME:" + to_string(time), glm::vec2(700, 900), 40, glm::vec4(1, 1, 1, 1));
+	text2.render("TIME:" + to_string(time), glm::vec2(900, 900), 40, glm::vec4(1, 1, 1, 1));
 }
 
 void PlayerInterface::setLives(int l) {
@@ -195,4 +193,6 @@ void PlayerInterface::setScore(int s){
 }
 
 
-
+void PlayerInterface::setTime(int t) {
+	time = t;
+}

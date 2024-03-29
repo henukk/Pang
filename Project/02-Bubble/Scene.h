@@ -28,6 +28,8 @@ public:
     bool checkCollision(Ball* ball, Player* player);
     void reLoad(string level);
     void stopSong();
+    void updateTimer(int deltaTime);
+    void startTimer(float duration);
 private:
     void initShaders();
 
@@ -47,6 +49,7 @@ private:
     std::vector<Ball*> balls;
     std::vector<Food*> foods;
     std::vector<Item*> items;
+    std::vector<Harpoon*> harpoons;
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
@@ -54,6 +57,13 @@ private:
 
     bool invencible, dinamite;
     int stopWatchCycles, invencibleCycles, dinamiteCycles;
+
+    float timer;       // Mantiene la cantidad actual de tiempo transcurrido.
+    float timerDuration; // Duración total que el temporizador debe correr.
+    bool timerActive;  // Indica si el temporizador está activo.
+
+
+
 };
 
 #endif // _SCENE_INCLUDE

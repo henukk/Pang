@@ -21,6 +21,7 @@ public:
     void setLives(int l);
     void setItem(Item::ITEM_TYPE i);
     void setScore(int s);
+    void setTime(int t);
 private:
     void prepareLivesSprite();
     void prepareItemsSprite();

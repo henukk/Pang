@@ -27,6 +27,7 @@ void PlayerInterface::init(ShaderProgram& program) {
 	prepareLivesSprite();
 	prepareItemsSprite();
 
+
 	if (!text2.init("fonts/OpenSans-Regular.ttf"))
 		cout << "Could not load font!!!" << endl;
 

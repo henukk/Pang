@@ -523,11 +523,8 @@ void Scene::reLoad(string level) {
 	invencible = false;
 	invencibleCycles = 0;
 	dinamite = false;
-<<<<<<< HEAD
 	score = 0;
-=======
 	dinamiteCycles = 0;
->>>>>>> 46796b5095829cdc3735f47c88d0716bfee7d37d
 }
 
 void Scene::stopSong() {

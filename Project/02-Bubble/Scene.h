@@ -53,7 +53,7 @@ private:
     SoundManager *sound;
 
     bool invencible, dinamite;
-    int stopWatchCycles, invencibleCycles;
+    int stopWatchCycles, invencibleCycles, dinamiteCycles;
 };
 
 #endif // _SCENE_INCLUDE

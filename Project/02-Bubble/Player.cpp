@@ -69,7 +69,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		&spritesheetInvencible,
 		&shaderProgram
 	);
-	spriteInvencible->setNumberAnimations(2);
+	spriteInvencible->setNumberAnimations(3);
 
 	spriteInvencible->setAnimationSpeed(ENABLED, 8);
 	spriteInvencible->addKeyframe(ENABLED, glm::vec2(0, 0.125 * 5));
@@ -78,7 +78,13 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	spriteInvencible->setAnimationSpeed(DISABLED, 8);
 	spriteInvencible->addKeyframe(DISABLED, glm::vec2(0.125 * 4, 0.125 * 5));
 
-	spriteInvencible->changeAnimation(ENABLED);
+	spriteInvencible->setAnimationSpeed(BLINKING, 8);
+	spriteInvencible->addKeyframe(BLINKING, glm::vec2(0.125 * 4, 0.125 * 5));
+	spriteInvencible->addKeyframe(BLINKING, glm::vec2(0, 0.125 * 5));
+	spriteInvencible->addKeyframe(BLINKING, glm::vec2(0.125 * 4, 0.125 * 5));
+	spriteInvencible->addKeyframe(BLINKING, glm::vec2(0.125 * 2, 0.125 * 5));
+
+	spriteInvencible->changeAnimation(DISABLED);
 	spriteInvencible->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y - 12)));
 }
 
@@ -112,8 +118,6 @@ void Player::update(int deltaTime)
 	
 	else if(Game::instance().getKey(GLFW_KEY_LEFT) )
 	{
-
-		
 		if(sprite->animation() != MOVE_LEFT)
 			sprite->changeAnimation(MOVE_LEFT);
 		posPlayer.x -= 2;
@@ -226,6 +230,15 @@ void Player::hit() {
 }
 
 
+void Player::setInvencible(int mode) { //0 = disable, 1 = enable, 2 blink
+	if (mode == 1)
+		spriteInvencible->changeAnimation(ENABLED);
+	else if (mode == 2) {
+		spriteInvencible->changeAnimation(BLINKING);
+	}
+	else
+		spriteInvencible->changeAnimation(DISABLED);
+}
 
 
 

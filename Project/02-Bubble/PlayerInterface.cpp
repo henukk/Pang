@@ -1,8 +1,10 @@
 #include "PlayerInterface.h"
 #include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #define bitSize 0.125
+#define MIN_GAME 7200
 
 PlayerInterface::PlayerInterface() {
 	lives = 0;
@@ -24,12 +26,25 @@ void PlayerInterface::init(ShaderProgram& program) {
 
 	prepareLivesSprite();
 	prepareItemsSprite();
+
+	if (!text2.init("fonts/OpenSans-Regular.ttf"))
+		cout << "Could not load font!!!" << endl;
+
+	
 }
 
 void PlayerInterface::update(int deltaTime) {
 
+	time = MIN_GAME - deltaTime-last_time;
+	last_time = deltaTime;
+
 }
 void PlayerInterface::render() {
+
+	glm::mat4 modelview;
+
+
+
 	glEnable(GL_TEXTURE_2D);
 	text.use();
 
@@ -79,6 +94,8 @@ void PlayerInterface::render() {
 
 	glDisable(GL_TEXTURE_2D);
 
+	text2.render("SCORE:"+ to_string(score), glm::vec2(500, 900), 40, glm::vec4(1, 1, 1, 1));
+	text2.render("TIME:" + to_string(time), glm::vec2(700, 900), 40, glm::vec4(1, 1, 1, 1));
 }
 
 void PlayerInterface::setLives(int l) {
@@ -141,3 +158,40 @@ void PlayerInterface::prepareItemsSprite() {
 
 	itemPos = glm::translate(glm::mat4(1.0f), glm::vec3(96, 8 * 28, 0.f));
 }
+void PlayerInterface::initShaders()
+{
+	Shader vShader, fShader;
+
+	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
+	if (!vShader.isCompiled())
+	{
+		cout << "Vertex Shader Error" << endl;
+		cout << "" << vShader.log() << endl << endl;
+	}
+	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
+	if (!fShader.isCompiled())
+	{
+		cout << "Fragment Shader Error" << endl;
+		cout << "" << fShader.log() << endl << endl;
+	}
+	texProgram.init();
+	texProgram.addShader(vShader);
+	texProgram.addShader(fShader);
+	texProgram.link();
+	if (!texProgram.isLinked())
+	{
+		cout << "Shader Linking Error" << endl;
+		cout << "" << texProgram.log() << endl << endl;
+	}
+	texProgram.bindFragmentOutput("outColor");
+	vShader.free();
+	fShader.free();
+}
+
+
+void PlayerInterface::setScore(int s){
+	score = s;
+}
+
+
+

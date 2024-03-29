@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include "Item.h"
+#include "Text.h"
 
 class PlayerInterface
 {
@@ -19,10 +20,15 @@ public:
 
     void setLives(int l);
     void setItem(Item::ITEM_TYPE i);
-
+    void setScore(int s);
 private:
     void prepareLivesSprite();
     void prepareItemsSprite();
+
+    void initShaders();
+
+
+ 
 
 private:
     ShaderProgram program;
@@ -39,6 +45,14 @@ private:
     GLuint vboItem;
     GLint posLocationItem, texCoordLocationItem;
     glm::mat4 itemPos;
+    Text text2;
+
+    glm::mat4 projection;
+    ShaderProgram texProgram;
+
+    int score;
+    int time;
+    int last_time;
 };
 
 #endif // _PLAYER_INTERFACE_INCLUDE

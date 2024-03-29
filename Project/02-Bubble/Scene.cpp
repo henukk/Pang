@@ -217,6 +217,7 @@ void Scene::update(int deltaTime)
 
 
 	playerInterface->update(deltaTime);
+	playerInterface->setScore(score);
 
 }
 
@@ -254,13 +255,13 @@ void Scene::initShaders()
 	Shader vShader, fShader;
 
 	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
-	if(!vShader.isCompiled())
+	if (!vShader.isCompiled())
 	{
 		cout << "Vertex Shader Error" << endl;
 		cout << "" << vShader.log() << endl << endl;
 	}
 	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
-	if(!fShader.isCompiled())
+	if (!fShader.isCompiled())
 	{
 		cout << "Fragment Shader Error" << endl;
 		cout << "" << fShader.log() << endl << endl;
@@ -269,7 +270,7 @@ void Scene::initShaders()
 	texProgram.addShader(vShader);
 	texProgram.addShader(fShader);
 	texProgram.link();
-	if(!texProgram.isLinked())
+	if (!texProgram.isLinked())
 	{
 		cout << "Shader Linking Error" << endl;
 		cout << "" << texProgram.log() << endl << endl;
@@ -278,6 +279,10 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
+
+
+
+
 
 void Scene::splitBall(int ballIndex) {
 	// Aqu� necesitas el �ndice de la pelota en el vector para dividirla
@@ -288,6 +293,7 @@ void Scene::splitBall(int ballIndex) {
 	Ball::BALL_SIZE type = hitBall->getType();
 	int direction = hitBall->getDirection();
 
+	hitBall->kill();
 	if (lastBallSizeDestoyed == type) {
 		comboCounter *= 2;
 		if (comboCounter > 8)
@@ -380,7 +386,6 @@ void Scene::splitBall(int ballIndex) {
 		break;
 	}
 
-	hitBall->kill();
 }
 
 bool Scene::checkCollision(Ball* ball, Player* player) {
@@ -468,6 +473,7 @@ void Scene::reLoad(string level) {
 	invencible = false;
 	invencibleCycles = 0;
 	dinamite = false;
+	score = 0;
 }
 
 void Scene::stopSong() {

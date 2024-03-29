@@ -1,0 +1,26 @@
+Héctor Núñez Carpio
+Gisela Borrás Zaplana
+
+Funcionalitats implementades:
+    Estructura bàsica de 4 pantalles: menú principal, jugar, instruccions,crèdits.
+    Un mínim de tres nivells amb la configuració de barreres i escales mostrades al document.
+    Les bombolles es veuen afectades per la gravetat, reboten per l’escenari amb els blocs i les barreres.
+    El jugador pot disparar el ganxo i aquest destrueix les bombolles amb les quals col·lisiona.
+    La destrucció de bombolles produeix power-ups. Power-ups implementats:
+        - Dynamite
+        - Feeze time
+        - Invencibility
+    També produeix objectes de menjar que el jugador pot recollir per obtenir punts addicionals.
+    Múltiples esdeveniments proporcionen al jugador punts.
+    El jugador pot pujar i baixar per les escales.
+    El nivell s’ha de superar en un temps límit. Si una bombolla impacta al personatge o el temps arriba al límit, el jugador perd automàticament una vida. Si no li queden vides, perd la partida.
+    Interfície gràfica que mostra el temps restant, la puntuació acumulada, les vides restants, els power-ups actius, i el nom de la fase en la qual es troba el jugador.
+    Tecles per saltar contingut.
+    So: música de fons i efectes especials.
+    Interactivitat de totes les entitats del joc
+
+Instruccions:
+    Un cop executat el codi. Apareix la intro del joc, per accedir al menú principal/selecció de nivell pitjar "Enter".
+    En la selecció de nivell si es polsa "I" es mostra la pantalla d'instruccions.
+    Al menu principal si es polsa 1, 2 o 3 s'accedeix al nivell dessitjat.
+    Per als powers ups són les tecles, "A" per Freeze time, "S" per Invencibility i "D" per Dynamite.

@@ -224,7 +224,12 @@ void Ball::update(int deltaTime, int timeStopped) {
 
 void Ball::render()
 {
-	sprite->render();
+	if (!status &&
+		(deadCounter < 4 * 5 && size != SMALL) ||
+		deadCounter < 4 * 4)
+	{
+		sprite->render();
+	}
 }
 
 void Ball::setTileMap(TileMap* tileMap)

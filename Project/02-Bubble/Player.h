@@ -23,6 +23,7 @@ public:
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
 	void shootHarpoon();
+	void setInvencible(int mode);
 	glm::ivec2 getPosition();
 
 	glm::ivec2 getSize();

@@ -17,6 +17,7 @@
 #define INIT_BALL_Y_TILES 2
 
 #define STOP_WATCH_CYCLES 180;
+#define DINAMITE_CYCLES 61
 
 Scene::Scene()
 {
@@ -33,6 +34,7 @@ Scene::Scene()
 	invencible = false;
 	invencibleCycles = 0;
 	dinamite = false;
+	dinamiteCycles = 0;
 }
 
 Scene::~Scene()
@@ -110,10 +112,28 @@ void Scene::init(string level,const char* song, SoundManager* soundM)
 	invencible = false;
 	invencibleCycles = 0;
 	dinamite = false;
+	dinamiteCycles = 0;
 }
 
 void Scene::update(int deltaTime)
 {
+	if (Game::instance().getKey(GLFW_KEY_A)) { //stop watch¡
+		playerInterface->setItem(Item::STOP_WATCH);
+		stopWatchCycles = STOP_WATCH_CYCLES;
+	}
+	if (Game::instance().getKey(GLFW_KEY_S)) { //god mode | invencible
+		playerInterface->setItem(Item::INVENCIBLE);
+		player->setInvencible(1);
+		invencible = true;
+		invencibleCycles = 60;
+	}
+	if (Game::instance().getKey(GLFW_KEY_D)) { //dinamite
+		playerInterface->setItem(Item::DINAMITE);
+		dinamite = true;
+		dinamiteCycles = DINAMITE_CYCLES;
+	}
+
+
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	if (Game::instance().getKey(GLFW_KEY_SPACE)) {
@@ -123,6 +143,7 @@ void Scene::update(int deltaTime)
 		harpoon->update(deltaTime);
 	else
 		harpoon->setPosition(player->getPosition());
+
 	for (int i = 0; i < balls.size(); ++i) {
 		if (harpoon->shooting() && balls[i]->getStatus() && balls[i]->isHitByHarpoon(*harpoon)) {
 			sound->playBGM("music/10 - Balloon Burst.mp3", false);
@@ -131,7 +152,8 @@ void Scene::update(int deltaTime)
 			break;
 		}
 	}
-
+	
+	// STOP WATCH
 	if(stopWatchCycles > 0) {
 		stopWatchCycles--;
 		if (stopWatchCycles == 0) {
@@ -139,11 +161,28 @@ void Scene::update(int deltaTime)
 		}
 	}
 
+	// INVENCIBLE
+	if (!invencible && invencibleCycles > 0) {
+		invencibleCycles--;
+		if (invencibleCycles == 0)
+			player->setInvencible(0);
+	}
+
 	bool done = true, allSmall = true;
 	for (int i = 0; i < balls.size(); ++i) {
 		if (balls[i]->getStatus()) {
 			done = false;
-			if (dinamite && balls[i]->getType() != Ball::SMALL) {
+			if (dinamite && dinamiteCycles <= 60 && balls[i]->getType() == Ball::HUGE) {
+				allSmall = false;
+				sound->playBGM("music/10 - Balloon Burst.mp3", false);
+				splitBall(i);
+			}
+			if (dinamite && dinamiteCycles <= 40 && balls[i]->getType() == Ball::BIG) {
+				allSmall = false;
+				sound->playBGM("music/10 - Balloon Burst.mp3", false);
+				splitBall(i);
+			}
+			if (dinamite && dinamiteCycles <= 20 && balls[i]->getType() == Ball::MEDIUM) {
 				allSmall = false;
 				sound->playBGM("music/10 - Balloon Burst.mp3", false);
 				splitBall(i);
@@ -154,18 +193,27 @@ void Scene::update(int deltaTime)
 	if (done) {
 		cout << "Level done!!!" << endl;
 	}
-	if (allSmall) {
+	if (dinamiteCycles == 0) {
 		dinamite = false;
+	}
+	if (dinamite) {
+		dinamiteCycles--;
 	}
 
 	for (auto& ball : balls) {
 		if (ball->getStatus() && checkCollision(ball, player) && stopWatchCycles == 0) {
-			player->hit();
-			--lives;
-			playerInterface->setLives(lives);
-			if(lives > 0)reLoad(currentLevel);
-			else Game::instance().changeState(GAME_MENU);
-			break;
+			if (invencible) {
+				invencible = false;
+				player->setInvencible(2);
+			}
+			else if(invencibleCycles == 0) {
+				player->hit();
+				--lives;
+				playerInterface->setLives(lives);
+				if (lives > 0)reLoad(currentLevel);
+				else Game::instance().changeState(GAME_MENU);
+				break;
+			}
 		}
 	}
 
@@ -196,14 +244,16 @@ void Scene::update(int deltaTime)
 				break;
 			case Item::INVENCIBLE:
 				playerInterface->setItem(Item::INVENCIBLE);
+				player->setInvencible(1);
 				invencible = true;
-				invencibleCycles = 90;
+				invencibleCycles = 60;
 				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
 				item->kill();
 				break;
 			case Item::DINAMITE:
 				playerInterface->setItem(Item::DINAMITE);
 				dinamite = true;
+				dinamiteCycles = DINAMITE_CYCLES;
 				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
 				item->kill();
 				break;
@@ -468,6 +518,7 @@ void Scene::reLoad(string level) {
 	invencible = false;
 	invencibleCycles = 0;
 	dinamite = false;
+	dinamiteCycles = 0;
 }
 
 void Scene::stopSong() {

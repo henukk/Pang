@@ -58,13 +58,17 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 	}
 
 	sprite = Sprite::createSprite(quadSize, sizeInSpriteSheet, &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(2);
+	sprite->setNumberAnimations(3);
 
 	switch (color)
 	{
 	case Ball::RED:
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 0));
+
+		sprite->setAnimationSpeed(BLINKING, 15);
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * 26, bitsSize * 26));
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * offset, bitsSize * 0));
 
 		sprite->setAnimationSpeed(EXPLODING, 15);
 		switch (size)
@@ -105,6 +109,10 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 5));
 
+		sprite->setAnimationSpeed(BLINKING, 4);
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * offset, bitsSize * 0));
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * 26, bitsSize * 26));
+
 		sprite->setAnimationSpeed(EXPLODING, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 5));
 		break;
@@ -113,6 +121,10 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 10));
 
+		sprite->setAnimationSpeed(BLINKING, 4);
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * offset, bitsSize * 0));
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * 26, bitsSize * 26));
+
 		sprite->setAnimationSpeed(EXPLODING, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 10));
 		break;
@@ -120,6 +132,10 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->setAnimationSpeed(NORMAL, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 0));
+
+		sprite->setAnimationSpeed(BLINKING, 4);
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize* offset, bitsSize * 0));
+		sprite->addKeyframe(BLINKING, glm::vec2(bitsSize * 26, bitsSize * 26));
 
 		sprite->setAnimationSpeed(EXPLODING, 8);
 		sprite->addKeyframe(NORMAL, glm::vec2(bitsSize * offset, bitsSize * 0));
@@ -132,7 +148,7 @@ void Ball::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL
 
 }
 
-void Ball::update(int deltaTime) {
+void Ball::update(int deltaTime, int timeStopped) {
 	if (!status) {
 		if ((deadCounter < 4*5 && size != SMALL) || deadCounter < 4*4) {
 			sprite->update(deltaTime);
@@ -140,62 +156,68 @@ void Ball::update(int deltaTime) {
 		deadCounter++;
 		return;
 	}
+	if (timeStopped == 0)
+		sprite->changeAnimation(NORMAL);
+	else if (timeStopped == 60)
+		sprite->changeAnimation(BLINKING);
+	
 	sprite->update(deltaTime);
 
-
 	// X algo
-	posBall.x += velocityX;
+	if (timeStopped == 0) {
+		posBall.x += velocityX;
 
-	if (map->collisionMoveLeft(posBall, boxSize) || map->collisionMoveRight(posBall, boxSize))
-	{
-		posBall.x -= velocityX;
-		velocityX = -velocityX;
-	}
+		if (map->collisionMoveLeft(posBall, boxSize) ||
+			map->collisionMoveRight(posBall, boxSize))
+		{
+			posBall.x -= velocityX;
+			velocityX = -velocityX;
+		}
 
-	// Y algo
+		// Y algo
 
-	posBall.y += velocityY;
+		posBall.y += velocityY;
 
-	if (energy >= 0) {
-		if (velocityY < 0)
+		if (energy >= 0) {
+			if (velocityY < 0)
+				velocityY = 0;
+			gravityCounter += gravity;
+			if (gravityCounter > gravityFactor) {
+				gravityCounter = 0;
+				velocityY += 1;
+			}
+			if (velocityY > maxGravity) {
+				velocityY = maxGravity;
+			}
+		}
+		else {
+			tmpSpeed = energy / 4;
+			if (tmpSpeed < -maxGravity)
+				tmpSpeed = -maxGravity;
+			if (tmpSpeed > -1)
+				tmpSpeed = -1;
+			velocityY = tmpSpeed;
+			energy -= velocityY;//posUp - posBall.y;
+		}
+
+		if (map->collisionMoveDownPlayer(posBall, boxSize))
+		{
+			while (map->collisionMoveDownPlayer(posBall, boxSize))
+				posBall.y -= 1;
 			velocityY = 0;
-		gravityCounter += gravity;
-		if (gravityCounter > gravityFactor) {
-			gravityCounter = 0;
-			velocityY += 1;
+			energy = posUp - posBall.y;
+			if (energy > -10)
+				energy = -20;
 		}
-		if (velocityY > maxGravity) {
-			velocityY = maxGravity;
+
+		if (map->collisionMoveUpPlayer(posBall, boxSize))
+		{
+			while (map->collisionMoveUpPlayer(posBall, boxSize))
+				posBall.y += 1;
+			velocityY = 0;
+			energy = 0;
 		}
 	}
-	else {
-		tmpSpeed = energy / 4;
-		if (tmpSpeed < -maxGravity)
-			tmpSpeed = -maxGravity;
-		if (tmpSpeed > -1)
-			tmpSpeed = -1;
-		velocityY = tmpSpeed;
-		energy -= velocityY;//posUp - posBall.y;
-	}
-
-	if (map->collisionMoveDown(posBall, boxSize))
-	{
-		while (map->collisionMoveDown(posBall, boxSize))
-			posBall.y -= 1;
-		velocityY = 0;
-		energy = posUp - posBall.y;
-		if (energy > -10)
-			energy = -20;
-	}
-
-	if (map->collisionMoveUp(posBall, boxSize))
-	{
-		while (map->collisionMoveUp(posBall, boxSize))
-			posBall.y += 1;
-		velocityY = 0;
-		energy = 0;
-	}
-
 
 	sprite->setPosition(glm::vec2(float(posBall.x), float(posBall.y)));
 }

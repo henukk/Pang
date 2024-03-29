@@ -10,9 +10,11 @@
 #define FALL_STEP 4
 
 
-enum PlayerAnims
-{
+enum PlayerAnims {
 	MOVE_LEFT, MOVE_RIGHT, STAY, DISPARA, PUJA, DIE_RIGHT, DIE_LEFT
+};
+enum InvencibleStatus {
+	ENABLED, DISABLED, BLINKING
 };
 
 
@@ -22,7 +24,11 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	bStairs = false;
 	spritesheet.loadFromFile("images/BluePlayer.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	spritesheetDeath.loadFromFile("images/PlayerDie", TEXTURE_PIXEL_FORMAT_RGBA);
-	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.1, 0.25), &spritesheet, &shaderProgram);
+	sprite = Sprite::createSprite(
+		glm::ivec2(32, 32),
+		glm::vec2(0.1, 0.25),
+		&spritesheet, &shaderProgram
+	);
 	sprite->setNumberAnimations(5);
 
 		sprite->setAnimationSpeed(MOVE_LEFT, 8);
@@ -51,18 +57,34 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->addKeyframe(PUJA, glm::vec2(0.2, 0.25f));
 		sprite->addKeyframe(PUJA, glm::vec2(0.3, 0.25f));
 	
-		
-		
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
+	//Invencible
+	spritesheetInvencible.loadFromFile("images/Items.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	spriteInvencible = Sprite::createSprite(
+		glm::ivec2(32, 48),
+		glm::vec2(0.125 * 2, 0.125 * 3),
+		&spritesheetInvencible,
+		&shaderProgram
+	);
+	spriteInvencible->setNumberAnimations(2);
+
+	spriteInvencible->setAnimationSpeed(ENABLED, 8);
+	spriteInvencible->addKeyframe(ENABLED, glm::vec2(0, 0.125 * 5));
+	spriteInvencible->addKeyframe(ENABLED, glm::vec2(0.125 * 2, 0.125 * 5));
+
+	spriteInvencible->setAnimationSpeed(DISABLED, 8);
+	spriteInvencible->addKeyframe(DISABLED, glm::vec2(0.125 * 4, 0.125 * 5));
+
+	spriteInvencible->changeAnimation(ENABLED);
+	spriteInvencible->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y - 12)));
 }
 
 void Player::update(int deltaTime)
 {
-
-
+	spriteInvencible->update(deltaTime);
 	sprite->update(deltaTime);
 	bool onStairs = map->bStairs(posPlayer, glm::ivec2(32, 32));
 	bool downStairs = map->bStairsDown(posPlayer, glm::ivec2(32, 32));
@@ -142,8 +164,7 @@ void Player::update(int deltaTime)
 		//if (sprite->animation() != PUJA) sprite->changeAnimation(PUJA);
 		sprite->changeAnimation(DISPARA);
 		
-	}
-	else if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs) {
+	} else if (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32)) && !onStairs) {
 		posPlayer.y += 2;
 		sprite->changeAnimation(STAY);
 
@@ -154,16 +175,15 @@ void Player::update(int deltaTime)
 		}
 	}
 	
-	
 	else sprite->changeAnimation(STAY);
-	
 
-
+	spriteInvencible->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y - 12)));
 	sprite->setPosition(glm::vec2(float(posPlayer.x), float(posPlayer.y)));
 }
 
 void Player::render()
 {
+	spriteInvencible->render();
 	sprite->render();
 	
 }
@@ -176,15 +196,16 @@ void Player::setTileMap(TileMap *tileMap)
 void Player::setPosition(const glm::vec2 &pos)
 {
 	posPlayer = pos;
+	spriteInvencible->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y - 12)));
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
 glm::ivec2 Player::getPosition()  {
-	return posPlayer;
+	return glm::ivec2(posPlayer.x+8, posPlayer.y+6);
 }
 
 glm::ivec2 Player::getSize() {
-	return glm::ivec2(16,32);
+	return glm::ivec2(16,26);
 }
 
 void Player::hit() {

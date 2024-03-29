@@ -41,6 +41,8 @@ private:
 	ShaderProgram texProgram;
 	float deathAnimationTime;
 
+	Texture spritesheetInvencible;
+	Sprite* spriteInvencible;
 
 };
 

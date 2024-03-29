@@ -16,11 +16,11 @@ public:
     };
 
     enum BALL_STATUS {
-        NORMAL, EXPLODING
+        NORMAL, EXPLODING, BLINKING
     };
 
     void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, BALL_COLOR color, BALL_SIZE size);
-    void update(int deltaTime);
+    void update(int deltaTime, int timeStopped);
     void render();
 
     void setTileMap(TileMap* tileMap);

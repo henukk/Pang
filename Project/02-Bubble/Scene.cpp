@@ -16,7 +16,7 @@
 #define INIT_BALL_X_TILES 2
 #define INIT_BALL_Y_TILES 2
 
-
+#define STOP_WATCH_CYCLES 180;
 
 Scene::Scene()
 {
@@ -24,9 +24,15 @@ Scene::Scene()
 	player = NULL;
 	balls.clear();
 	foods.clear();
+	items.clear();
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
 	std::srand(std::time(nullptr));
+	playerInterface = NULL;
+	stopWatchCycles = 0;
+	invencible = false;
+	invencibleCycles = 0;
+	dinamite = false;
 }
 
 Scene::~Scene()
@@ -43,6 +49,13 @@ Scene::~Scene()
 		if (f != NULL)
 			delete f;
 	}
+	for (Item* i : items) {
+		if (i != NULL)
+			delete i;
+	}
+	if (playerInterface != NULL) {
+		delete playerInterface;
+	}
 }
 
 
@@ -53,6 +66,7 @@ void Scene::init(string level,const char* song, SoundManager* soundM)
 	player = NULL;
 	balls.clear();
 	foods.clear();
+	items.clear();
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
 	std::srand(std::time(nullptr));
@@ -86,6 +100,16 @@ void Scene::init(string level,const char* song, SoundManager* soundM)
 	
 	sound->stopAllSounds();
 	sound->playBGM(song, true);
+
+	playerInterface = new PlayerInterface();
+	playerInterface->init(texProgram);
+	playerInterface->setLives(lives);
+	playerInterface->setItem(Item::NONE);
+
+	stopWatchCycles = 0;
+	invencible = false;
+	invencibleCycles = 0;
+	dinamite = false;
 }
 
 void Scene::update(int deltaTime)
@@ -107,21 +131,38 @@ void Scene::update(int deltaTime)
 			break;
 		}
 	}
-	bool done = true;
-	for (auto& ball : balls) {
-		if (ball->getStatus()) {
-			done = false;
+
+	if(stopWatchCycles > 0) {
+		stopWatchCycles--;
+		if (stopWatchCycles == 0) {
+			playerInterface->setItem(Item::NONE);
 		}
-		ball->update(deltaTime);
+	}
+
+	bool done = true, allSmall = true;
+	for (int i = 0; i < balls.size(); ++i) {
+		if (balls[i]->getStatus()) {
+			done = false;
+			if (dinamite && balls[i]->getType() != Ball::SMALL) {
+				allSmall = false;
+				sound->playBGM("music/10 - Balloon Burst.mp3", false);
+				splitBall(i);
+			}
+		}
+		balls[i]->update(deltaTime, stopWatchCycles);
 	}
 	if (done) {
-		cout << "eiow" << endl;
+		cout << "Level done!!!" << endl;
+	}
+	if (allSmall) {
+		dinamite = false;
 	}
 
 	for (auto& ball : balls) {
-		if (ball->getStatus() && checkCollision(ball, player)) {
+		if (ball->getStatus() && checkCollision(ball, player) && stopWatchCycles == 0) {
 			player->hit();
 			--lives;
+			playerInterface->setLives(lives);
 			if(lives > 0)reLoad(currentLevel);
 			else Game::instance().changeState(GAME_MENU);
 			break;
@@ -140,6 +181,42 @@ void Scene::update(int deltaTime)
 
 		}
 	}
+
+	for (auto& item : items) {
+		if (item->isAlive()) {
+			item->update(deltaTime);
+			Item::ITEM_TYPE actItemType = item->checkCollider(player->getPosition(), player->getSize());
+			switch (actItemType)
+			{
+			case Item::STOP_WATCH:
+				playerInterface->setItem(Item::STOP_WATCH);
+				stopWatchCycles = STOP_WATCH_CYCLES;
+				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
+				item->kill();
+				break;
+			case Item::INVENCIBLE:
+				playerInterface->setItem(Item::INVENCIBLE);
+				invencible = true;
+				invencibleCycles = 90;
+				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
+				item->kill();
+				break;
+			case Item::DINAMITE:
+				playerInterface->setItem(Item::DINAMITE);
+				dinamite = true;
+				sound->playBGM("music/04 - Perfect Bonus.mp3", false);
+				item->kill();
+				break;
+			case Item::NONE:
+			default:
+				break;
+			}
+
+		}
+	}
+
+
+	playerInterface->update(deltaTime);
 
 }
 
@@ -163,6 +240,12 @@ void Scene::render()
 	for (auto food : foods) {
 		food->render();
 	}
+	for (auto item : items) {
+		item->render();
+	}
+
+
+	playerInterface->render();
 
 }
 
@@ -214,11 +297,36 @@ void Scene::splitBall(int ballIndex) {
 	lastBallSizeDestoyed = type;
 
 	//food generator
-	int foodPos = 8 + rand() % (360 - 8 + 1);
-	static int eiow = 0;
-	foods.push_back(new Food());
-	foods.back()->init(eiow++, glm::vec2(foodPos, 8), texProgram);
-	foods.back()->setTileMap(map);
+	int prob = rand() % 101;
+	
+	if (prob < 10) {
+		int foodPos = 8 + rand() % (360 - 8 + 1);
+		int foodType = rand() % 28;
+		foods.push_back(new Food());
+		foods.back()->init(foodType, glm::vec2(foodPos, 8), texProgram);
+		foods.back()->setTileMap(map);
+	}
+	else if (prob >= 10 && prob < 30) {
+		int itemTypeId = 1 + rand() % 3;
+		Item::ITEM_TYPE itemType = Item::NONE;
+		cout << itemTypeId << endl;
+		switch (itemTypeId)
+		{
+		case 1:
+			itemType = Item::STOP_WATCH;
+			break;
+		case 2:
+			itemType = Item::INVENCIBLE;
+			break;
+		case 3:
+			itemType = Item::DINAMITE;
+		default:
+			break;
+		}
+		items.push_back(new Item());
+		items.back()->init(itemType, pos, texProgram);
+		items.back()->setTileMap(map);
+	}
 
 	switch (type) {
 	case Ball::HUGE:
@@ -275,7 +383,6 @@ void Scene::splitBall(int ballIndex) {
 	hitBall->kill();
 }
 
-
 bool Scene::checkCollision(Ball* ball, Player* player) {
 	// Calcula los bordes del jugador y la pelota
 	glm::vec2 playerPos = player->getPosition();
@@ -292,8 +399,6 @@ bool Scene::checkCollision(Ball* ball, Player* player) {
 	// Si hay colisi�n en ambas dimensiones, entonces hay una colisi�n
 	return collisionX && collisionY;
 }
-
-
 
 void Scene::reLoad(string level) {
 	std::srand(std::time(nullptr));
@@ -319,6 +424,13 @@ void Scene::reLoad(string level) {
 		}
 	}
 	foods.clear();
+
+	for (Item* i : items) {
+		if (i != NULL) {
+			delete i;
+		}
+	}
+	items.clear();
 
 	if (harpoon != NULL) {
 		delete harpoon;
@@ -349,12 +461,14 @@ void Scene::reLoad(string level) {
 	currentTime = 0.0f;
 	// Reinicia otras variables de estado si es necesario...
 
-	lives = 3;
-	score = 0;
 	comboCounter = 0;
 	lastBallSizeDestoyed = Ball::NONE;
-}
 
+	stopWatchCycles = 0;
+	invencible = false;
+	invencibleCycles = 0;
+	dinamite = false;
+}
 
 void Scene::stopSong() {
 	sound->stopBGM();

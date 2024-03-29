@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #define bitsSize 0.125
+#define liveCycle 300;
+#define blinkCycle 60;
 
 Food::Food() {
 }
@@ -40,6 +42,7 @@ void Food::init(int id, glm::vec2 initPos, ShaderProgram& shaderProgram) {
 			pos.x -= 16;
 	}
 	else {
+		id = 27;
 		quadSize = glm::ivec2(32, 32);
 		sizeInSpriteSheet = glm::vec2(bitsSize * 2, bitsSize * 2);
 		boxSize = glm::vec2(32, 29);

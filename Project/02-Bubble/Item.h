@@ -1,34 +1,37 @@
-// Food.h
-#ifndef _FOOD_INCLUDE
-#define _FOOD_INCLUDE
+// Item.h
+#ifndef _ITEM_INCLUDE
+#define _ITEM_INCLUDE
 
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
 
-class Food
+class Item
 {
 public:
-    Food();
-    ~Food();
+    enum ITEM_TYPE {
+        NONE, STOP_WATCH, INVENCIBLE, DINAMITE
+    };
 
-    void init(int id, glm::vec2 initPos, ShaderProgram& shaderProgram);
+    Item();
+    ~Item();
+
+    void init(ITEM_TYPE type, glm::vec2 initPos, ShaderProgram& shaderProgram);
     void update(int deltaTime);
     void render();
     void setTileMap(TileMap* tileMap);
     bool isAlive();
-    int checkCollider(glm::vec2 playerPos, glm::vec2 playerSize);
+    ITEM_TYPE checkCollider(glm::vec2 playerPos, glm::vec2 playerSize);
     void kill();
 private:
-
-
     enum ITEM_STATUS {
         NORMAL, BLINKING, DEAD
     };
 
 private:
-    int id, cyclesCounter;
+    ITEM_TYPE itemType;
+    int cyclesCounter;
     TileMap* map;
     Texture spritesheet;
     Sprite* sprite;
@@ -37,4 +40,4 @@ private:
     bool alive;
 };
 
-#endif // _FOOD_INCLUDE
+#endif // _ITEM_INCLUDE

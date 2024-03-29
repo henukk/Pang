@@ -9,6 +9,7 @@
 #include "Ball.h"
 #include "Harpoon.h"
 #include "Food.h"
+#include "Item.h"
 #include "PlayerInterface.h"
 #include "SoundManager.h"
 #include "Text.h"
@@ -45,11 +46,14 @@ private:
     glm::mat4 projection;
     std::vector<Ball*> balls;
     std::vector<Food*> foods;
+    std::vector<Item*> items;
 
     Ball::BALL_SIZE lastBallSizeDestoyed;
     int comboCounter;
     SoundManager *sound;
 
+    bool invencible, dinamite;
+    int stopWatchCycles, invencibleCycles;
 };
 
 #endif // _SCENE_INCLUDE

@@ -42,7 +42,6 @@ public:
 	bool bStairsDown(const glm::ivec2& pos, const glm::ivec2& size) const;
 
 	bool collisionMoveUpPlayer(const glm::ivec2& pos, const glm::ivec2& size) const;
-
 	bool collisionMoveDownPlayer(const glm::ivec2& pos, const glm::ivec2& size) const;
 
 	void getRightTile(const glm::ivec2& pos, const glm::ivec2& size);

@@ -78,7 +78,7 @@ void Game::keyPressed(int key) {
             case GLFW_KEY_3:
                 state = GAME_PLAYING;
                 menu.stopSong();
-                scene.init("levels/stage2-1.txt", "music/06. Stage 05-07 (Silk Road (Xi'an)).mp3", &sound);
+                scene.init("levels/stage3-1.txt", "music/06. Stage 05-07 (Silk Road (Xi'an)).mp3", &sound);
                 currentLevel = 3;
                 break;
         }

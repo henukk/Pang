@@ -1,9 +1,4 @@
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include "TexturedQuad.h"
-
-
-
 
 TexturedQuad* TexturedQuad::createTexturedQuad(glm::vec2 geom[2], glm::vec2 texCoords[2], ShaderProgram& program) {
     return new TexturedQuad(geom, texCoords, program);
@@ -44,8 +39,7 @@ void TexturedQuad::render(const Texture& tex) const {
     glBindVertexArray(0);
 }
 
-void TexturedQuad::free() const{
+void TexturedQuad::free() const {
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
 }
-

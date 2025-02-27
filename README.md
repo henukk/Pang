@@ -18,7 +18,7 @@ Pang (also known as Super Pang outside Europe) is a legendary arcade game where 
 
 | Action | Key |
 |--------|-----|
-| Select level | `1``2``3` |
+| Select level | `1,2,3` |
 | Move Left | `←` |
 | Move Right | `→` |
 | Move Up | `↑` |

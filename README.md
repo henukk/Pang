@@ -3,7 +3,7 @@
 *A tribute of the classic arcade game Pang*
 
 ## 🎮 Introduction
-Pang (also known as Super Pang outside Europe) is a legendary arcade game where players must destroy bouncing bubbles while avoiding contact with them. This tribute project aims to recreate the thrilling challenge and fun of the original game with a fresh design and modern enhancements.
+Pang (also known as Super Pang outside Europe) is a legendary arcade game where players must destroy bouncing bubbles while avoiding contact with them. This tribute project aims to recreate the thrilling challenge and fun of the original game.
 
 ## 🔥 Features & Gameplay
 ### ✅ Key Features
